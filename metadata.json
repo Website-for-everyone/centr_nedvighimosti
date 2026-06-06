@@ -1,0 +1,6 @@
+{
+  "name": "Центр Недвижимости",
+  "description": "Элитный лендинг для сбора заявок на покупку и продажу недвижимости по льготным программам ипотеки и материнского капитала.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
