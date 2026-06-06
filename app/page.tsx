@@ -78,7 +78,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Кировский р-н, ул. Менделеева, стр. 137",
     completion: "Сдан",
     developer: "Prime Development",
-    imgUrl: "/iremel.jpeg",
+    imgUrl: "/centr_nedvighimosti/iremel.jpeg",
     prices: [
       { type: "Студия", price: "от 10,1 млн ₽" },
       { type: "1-комн", price: "от 26,5 млн ₽" },
@@ -93,7 +93,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Октябрьский р-н, ул. Проспект Октября, д. 75",
     completion: "4 кв. 2026",
     developer: "Prime Development",
-    imgUrl: "/prime.jpeg",
+    imgUrl: "/centr_nedvighimosti/prime.jpeg",
     prices: [
       { type: "Студия", price: "от 7,6 млн ₽" },
       { type: "1-комн", price: "от 10,6 млн ₽" },
@@ -108,7 +108,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Октябрьский р-н, ул. Комсомольская, д. 104",
     completion: "3 кв. 2026",
     developer: "СтройТЭК",
-    imgUrl: "/aurus.jpeg",
+    imgUrl: "/centr_nedvighimosti/aurus.jpeg",
     prices: [
       { type: "1-комн", price: "от 9,2 млн ₽" },
       { type: "2-комн", price: "от 11 млн ₽" },
@@ -123,7 +123,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Кировский р-н, ул. Геофизиков, д. 6",
     completion: "3 кв. 2029",
     developer: "ГК БРИГ",
-    imgUrl: "/geos.jpeg",
+    imgUrl: "/centr_nedvighimosti/geos.jpeg",
     prices: [
       { type: "Студия", price: "от 6,2 млн ₽" },
       { type: "1-комн", price: "от 7,5 млн ₽" },
@@ -138,7 +138,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Кировский р-н, ул. Авроры, д.18/1",
     completion: "Сдан - 3 кв. 2026",
     developer: "ГК Садовое кольцо",
-    imgUrl: "/terle.jpeg",
+    imgUrl: "/centr_nedvighimosti/terle.jpeg",
     prices: [
       { type: "Студия", price: "от 6,2 млн ₽" },
       { type: "1-комн", price: "от 7,5 млн ₽" },
@@ -211,10 +211,10 @@ export default function LandingPage() {
     { word: 'IT-льготами', prep: 'с' },
     { word: 'Гос. Поддержкой', prep: 'с' },
     { word: 'Семейными Льготами', prep: 'с' },
-    { word: 'легкостью', prep: 'с' },
+    { word: 'Легкостью', prep: 'с' },
     { word: 'Скоростью', prep: 'со' },
-    { word: 'выгодой', prep: 'с' },
-    { word: 'нами', prep: 'с' }
+    { word: 'Выгодой', prep: 'с' },
+    { word: 'Нами', prep: 'с' }
   ];
 
   const [dynamicWordIndex, setDynamicWordIndex] = useState(0);
@@ -546,7 +546,7 @@ export default function LandingPage() {
       setIsAdminAuthenticated(true);
       setAdminError('');
     } else {
-      setAdminError('Неверный код доступа. Попробуйте "2026"');
+      setAdminError('Неверный код доступа');
     }
   };
 
