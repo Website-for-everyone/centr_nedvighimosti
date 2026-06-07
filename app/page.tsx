@@ -79,7 +79,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Кировский р-н, ул. Менделеева, стр. 137",
     completion: "Сдан",
     developer: "Prime Development",
-    imgUrl: "/iremel.jpeg",
+    img: "/iremel.jpeg",
     prices: [
       { type: "Студия", price: "от 10,1 млн ₽" },
       { type: "1-комн", price: "от 26,5 млн ₽" },
