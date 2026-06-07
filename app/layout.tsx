@@ -1,45 +1,56 @@
-import type {Metadata} from 'next';
-import { Inter } from 'next/font/google';
-import Script from 'next/script';
-import './globals.css';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import Script from "next/script"; // ВАЖНО: Импортируем умные скрипты Next.js
 
-const inter = Inter({
-  subsets: ['latin', 'cyrillic'],
-  variable: '--font-sans',
-  display: 'swap',
-});
+const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
 export const metadata: Metadata = {
-  title: 'Центр Недвижимости — Расчет Льготной Ипотеки',
-  description: 'Продажа и покупка квартир с субсидией, льготной ипотекой и маткапиталом. Быстрый и честный расчет.',
+  title: "Единый Центр Недвижимости",
+  description: "Интерактивный расчет ипотеки и подбор жилья",
 };
 
-export default function RootLayout({children}: {children: React.ReactNode}) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  
+  // ⚡ ВСТАВЬ СЮДА СВОЙ ID СЧЕТЧИКА ИЗ КАБИНЕТА ЯНДЕКС МЕТРИКИ (только цифры в кавычках)
+  const METRIKA_ID = "ТВОЙ_НОМЕР_СЧЕТЧИКА"; 
+
   return (
-    <html lang="ru" className={`${inter.variable}`}>
-      <body suppressHydrationWarning className="font-sans antialiased text-gray-900 bg-slate-50 min-h-screen selection:bg-rose-100 selection:text-rose-900">
+    <html lang="ru">
+      <head>
+        {/* Кристально правильное подключение Яндекс Метрики для Next.js App Router */}
+        <Script id="yandex-metrika" strategy="afterInteractive">
+          {`
+            (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < e.scripts.length; j++) {if (e.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+            (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+            ym(${METRIKA_ID}, "init", {
+                 clickmap:true,
+                 trackLinks:true,
+                 accurateTrackBounce:true,
+                 webvisor:true
+            });
+          `}
+        </Script>
+      </head>
+      <body className={inter.className}>
         {children}
         
-        {/* Yandex.Metrika counter */}
-        <Script
-          id="yandex-metrika"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(m,e,t,r,i,k,a){
-                m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-                m[i].l=1*new Date();
-                for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-                k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-              })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109697187', 'ym');
-
-              ym(109697187, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-            `
-          }}
-        />
+        {/* Исправленный тег noscript, адаптированный под правила JSX/React */}
         <noscript>
           <div>
-            <img src="https://mc.yandex.ru/watch/109697187" style={{position: 'absolute', left: '-9999px'}} alt="" />
+            <img 
+              src={`https://mc.yandex.ru/watch/${METRIKA_ID}`} 
+              style={{ position: "absolute", left: "-9999px" }} 
+              alt="" 
+            />
           </div>
         </noscript>
       </body>
