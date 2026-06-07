@@ -22,6 +22,7 @@ import {
   Trash2, 
   Download, 
   ChevronRight, 
+  ChevronDown,
   X, 
   Menu,
   Lock,
@@ -78,7 +79,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Кировский р-н, ул. Менделеева, стр. 137",
     completion: "Сдан",
     developer: "Prime Development",
-    imgUrl: "/centr_nedvighimosti/iremel.jpeg",
+    imgUrl: "/iremel.jpeg",
     prices: [
       { type: "Студия", price: "от 10,1 млн ₽" },
       { type: "1-комн", price: "от 26,5 млн ₽" },
@@ -93,7 +94,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Октябрьский р-н, ул. Проспект Октября, д. 75",
     completion: "4 кв. 2026",
     developer: "Prime Development",
-    imgUrl: "/centr_nedvighimosti/prime.jpeg",
+    imgUrl: "/prime.jpeg",
     prices: [
       { type: "Студия", price: "от 7,6 млн ₽" },
       { type: "1-комн", price: "от 10,6 млн ₽" },
@@ -108,7 +109,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Октябрьский р-н, ул. Комсомольская, д. 104",
     completion: "3 кв. 2026",
     developer: "СтройТЭК",
-    imgUrl: "/centr_nedvighimosti/aurus.jpeg",
+    imgUrl: "/aurus.jpeg",
     prices: [
       { type: "1-комн", price: "от 9,2 млн ₽" },
       { type: "2-комн", price: "от 11 млн ₽" },
@@ -123,7 +124,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Кировский р-н, ул. Геофизиков, д. 6",
     completion: "3 кв. 2029",
     developer: "ГК БРИГ",
-    imgUrl: "/centr_nedvighimosti/geos.jpeg",
+    imgUrl: "/geos.jpeg",
     prices: [
       { type: "Студия", price: "от 6,2 млн ₽" },
       { type: "1-комн", price: "от 7,5 млн ₽" },
@@ -138,7 +139,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Кировский р-н, ул. Авроры, д.18/1",
     completion: "Сдан - 3 кв. 2026",
     developer: "ГК Садовое кольцо",
-    imgUrl: "/centr_nedvighimosti/terle.jpeg",
+    imgUrl: "/terle.jpeg",
     prices: [
       { type: "Студия", price: "от 6,2 млн ₽" },
       { type: "1-комн", price: "от 7,5 млн ₽" },
@@ -158,14 +159,6 @@ function generateLeadId(): string {
 export default function LandingPage() {
   // Mobile menu state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // Lead submissions (localStorage based)
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [showAdmin, setShowAdmin] = useState(false);
-  const [adminCode, setAdminCode] = useState('');
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
-  const [adminError, setAdminError] = useState('');
-  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Form states
   const [calcGoal, setCalcGoal] = useState<'buy' | 'sell'>('buy');
@@ -192,7 +185,6 @@ export default function LandingPage() {
   const [quizStep, setQuizStep] = useState(1); // steps: 1 (goal), 2 (params), 3 (contacts)
 
   // General feedback/interactive states
-  const [secretCounter, setSecretCounter] = useState(0);
   const [activeFaqIndex, setActiveFaqIndex] = useState<number | null>(0);
   const [activeTimelineStep, setActiveTimelineStep] = useState<number>(0);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -211,10 +203,10 @@ export default function LandingPage() {
     { word: 'IT-льготами', prep: 'с' },
     { word: 'Гос. Поддержкой', prep: 'с' },
     { word: 'Семейными Льготами', prep: 'с' },
-    { word: 'Легкостью', prep: 'с' },
+    { word: 'легкостью', prep: 'с' },
     { word: 'Скоростью', prep: 'со' },
-    { word: 'Выгодой', prep: 'с' },
-    { word: 'Нами', prep: 'с' }
+    { word: 'выгодой', prep: 'с' },
+    { word: 'нами', prep: 'с' }
   ];
 
   const [dynamicWordIndex, setDynamicWordIndex] = useState(0);
@@ -253,24 +245,6 @@ export default function LandingPage() {
   // Standard constants for calculations
   const MAT_CAP_AMOUNT = 729000; // 2026 typical maternity capital amount
   
-  // Load leads from localStorage asynchronously in useEffect to prevent rendering cycle issues
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('housing_leads');
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          // Set leads state in animation frame to avoid synchronous effect updates
-          requestAnimationFrame(() => {
-            setLeads(parsed);
-          });
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    }
-  }, []);
-
   // Monitor screen size for Active Station dynamic alignment and wheel radius
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -531,79 +505,19 @@ export default function LandingPage() {
       console.error('Failed to dispatch lead integration:', err);
     }
 
-    const updatedLeads = [newLead, ...leads];
-    setLeads(updatedLeads);
-    localStorage.setItem('housing_leads', JSON.stringify(updatedLeads));
+    try {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('housing_leads');
+        const parsed = stored ? JSON.parse(stored) : [];
+        const updatedLeads = [newLead, ...parsed];
+        localStorage.setItem('housing_leads', JSON.stringify(updatedLeads));
+      }
+    } catch (err) {
+      console.error('Failed to save housing lead locally:', err);
+    }
 
     setIsSubmitting(false);
     setFormSubmitted(true);
-  };
-
-  // Safe secret admin code logic
-  const handleAdminVerify = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (adminCode === '2026' || adminCode.toLowerCase() === 'admin') {
-      setIsAdminAuthenticated(true);
-      setAdminError('');
-    } else {
-      setAdminError('Неверный код доступа');
-    }
-  };
-
-  // Clear single lead
-  const handleDeleteLead = (id: string) => {
-    const fresh = leads.filter(l => l.id !== id);
-    setLeads(fresh);
-    localStorage.setItem('housing_leads', JSON.stringify(fresh));
-  };
-
-  // Reset/Clear all leads
-  const handleClearAllLeads = () => {
-    if (window.confirm('Вы действительно хотите удалить все заявки?')) {
-      setLeads([]);
-      localStorage.setItem('housing_leads', JSON.stringify([]));
-    }
-  };
-
-  // Copy telephone number
-  const copyValue = (val: string, id: string) => {
-    navigator.clipboard.writeText(val);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
-  // Logo secret click to reveal admin cabinet
-  const handleLogoClick = () => {
-    setSecretCounter(prev => {
-      const next = prev + 1;
-      if (next >= 5) {
-        setShowAdmin(true);
-        return 0;
-      }
-      return next;
-    });
-  };
-
-  // Convert leads to CSV string for handy exports
-  const exportToCSV = () => {
-    if (leads.length === 0) return;
-    const headers = 'ID,Дата,Имя,Фамилия,Телефон,Способ связи,Цель,Цена недвижимости,Первоначальный взнос,Материнский капитал,Комнаты,Тип/Состояние,Срочность/Готовность,Программа,Месячный платеж\n';
-    const rows = leads.map(l => {
-      const typeStr = l.goal === 'buy' ? 'Покупка' : 'Продажа';
-      const detail1 = l.goal === 'buy' ? (l.locationType || '') : (l.condition || '');
-      const detail2 = l.goal === 'buy' ? (l.readiness || '') : (l.urgency || '');
-      return `${l.id},"${l.submittedAt}","${l.name}","${l.lastName || ''}","${l.phone}","${l.contactMethod || 'Telegram'}","${typeStr}",${l.propertyValue},${l.downPayment},${l.useMatCap ? 'Да' : 'Нет'},"${l.rooms || ''}","${detail1}","${detail2}","${l.program}",${l.monthlyPayment}`;
-    }).join('\n');
-    
-    // Create download trigger
-    const blob = new Blob([`\ufeff${headers}${rows}`], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `leads_export_${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   return (
@@ -633,11 +547,9 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 w-full bg-white/70 backdrop-blur-xl border-b border-gray-200/50 transition-all">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 h-20 flex items-center justify-between">
           
-          {/* Logo with secret micro interaction */}
+          {/* Logo */}
           <div 
-            onClick={handleLogoClick}
-            className="flex items-center gap-2.5 cursor-pointer group select-none active:scale-95 transition-transform"
-            title="Кликните 5 раз для входа в панель распределения заявок"
+            className="flex items-center gap-2.5 group select-none active:scale-95 transition-transform"
           >
             <div className="relative w-11 h-11 flex items-center justify-center rounded-xl bg-gradient-to-tr from-slate-900 to-slate-800 text-white shadow-xl shadow-slate-900/10 transition-transform duration-500 group-hover:rotate-12">
               <Building className="w-5.5 h-5.5 text-white" />
@@ -651,11 +563,6 @@ export default function LandingPage() {
                 Интерактивный Расчет
               </div>
             </div>
-            {secretCounter > 0 && (
-              <span className="text-[11px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full ml-1 font-bold">
-                {secretCounter}/5
-              </span>
-            )}
           </div>
 
           {/* Navigation Links Desktop */}
@@ -2039,7 +1946,7 @@ export default function LandingPage() {
                 <div className="mt-2 flex flex-col sm:flex-row gap-4 items-center justify-center lg:justify-start">
                   <button
                     onClick={scrollToCalculator}
-                    className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white px-6 py-3.5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 active:scale-95 transition-all border-0 cursor-pointer shadow-lg shadow-slate-900/15 z-30"
+                    className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white px-6 py-3.5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 active:scale-95 transition-all border-0 cursor-pointer shadow-lg shadow-slate-900/15 z-30 font-semibold"
                   >
                     <span>Рассчитать ипотеку</span>
                     <ArrowRight className="w-3.5 h-3.5 text-white" />
@@ -2218,7 +2125,7 @@ export default function LandingPage() {
         <section className="mt-32 sm:mt-48 md:mt-64 mb-24 md:mb-32">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
-            <div className="lg:col-span-5">
+            <div className="lg:col-span-12 xl:col-span-5">
               <span className="text-xs font-extrabold tracking-widest text-[#64748B] uppercase">Ответы на вопросы</span>
               <h2 className="text-3xl font-extrabold text-slate-950 tracking-tight mt-2 mb-4">
                 Часто задаваемые вопросы клиентов
@@ -2236,53 +2143,46 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="lg:col-span-7 space-y-4">
+            <div className="lg:col-span-12 xl:col-span-7 space-y-4">
               {[
                 {
                   q: 'Можно ли использовать маткапитал в качестве первоначального взноса без собственных накоплений?',
-                  a: 'Да. По закону РФ сертификат материнского капитала можно направить на формирование первоначального взноса. Некоторые банки требуют небольшую доплату наличными (от 5% до 10%), однако существуют специальные программы, позволяющие оформить расчет абсолютно без личных накоплений.'
+                  a: 'Да. По закону РФ сертификат материнского капитала можно направить на формирование первоначального взноса. Некоторые банки требуют небольшую доплату наличными (от 5% до 10%), однако существуют специальные программы, позволяющие оформить сделку полностью за счет средств государственной поддержки.'
                 },
                 {
-                  q: 'Как быть, если ребенку еще не исполнилось 3 года?',
-                  a: 'Если вы берете ипотечный кредит, то использовать материнский капитал на первоначальный взнос или гашение долга можно в любой момент сразу после рождения ребенка. Ждать исполнения 3-х лет не требуется!'
+                  q: 'Как быстро ПФР переводит средства материнского капитала банку?',
+                  a: 'После одобрения сделки банком и регистрации договора долевого участия или купли-продажи в Росреестре, вы подаете заявление на распоряжение средствами в Социальный фонд РФ (бывший ПФР). Рассмотрение занимает до 5 рабочих дней, а перечисление средств — еще до 5 рабочих дней.'
                 },
                 {
-                  q: 'Как продать квартиру, если в нее уже вложен материнский капитал?',
-                  a: 'Для этого необходимо наделить детей долями в праве собственности, получить официальное согласие органов опеки на продажу этого объекта с одновременным выделением соразмерных долей в покупаемой квартире. Данная процедура требует согласованного поэтапного оформления для освобождения вашего времени от лишней бюрократии.'
-                },
-                {
-                  q: 'Какие документы нужны для старта расчета?',
-                  a: 'На первом этапе потребуются только базовые сведения: ваш паспорт РФ, СНИЛС и сам сертификат материнского капитала (бумажный оригинал либо выписка с портала Госуслуг). Одобрение банка по двум документам занимает до 2-х часов.'
+                  q: 'Какие условия по Семейной ипотеке действуют в 2026 году?',
+                  a: 'Программа Семейной ипотеки доступна для семей, где есть хотя бы один ребенок в возрасте до 6 лет включительно, либо двое несовершеннолетних детей. Ставка составляет до 6%, а в качестве первоначального взноса можно использовать материнский капитал.'
                 }
-              ].map((faq, idx) => {
+              ].map((item, idx) => {
                 const isOpen = activeFaqIndex === idx;
-                const handleFaqToggle = () => {
-                  setActiveFaqIndex(isOpen ? null : idx);
-                };
                 return (
-                  <div key={idx} className="bg-white/40 border border-gray-200/60 rounded-2xl p-5 transition-all">
-                    <button 
-                      onClick={handleFaqToggle}
-                      className="w-full flex items-center justify-between text-left focus:outline-hidden bg-transparent border-0 cursor-pointer"
+                  <div key={idx} className="border border-slate-200/60 rounded-2xl bg-white overflow-hidden transition-all duration-300 shadow-xs">
+                    <button
+                      onClick={() => setActiveFaqIndex(isOpen ? null : idx)}
+                      className="w-full text-left p-5 sm:p-6 flex justify-between items-center gap-4 hover:bg-slate-50/50 transition-colors border-0 bg-transparent cursor-pointer"
                     >
-                      <span className="font-extrabold text-slate-900 text-sm sm:text-base pr-4">
-                        {faq.q}
+                      <span className="font-extrabold text-slate-900 text-sm sm:text-base leading-tight">
+                        {item.q}
                       </span>
-                      <span className="text-xl text-slate-500 font-extralight select-none">
-                        {isOpen ? '−' : '+'}
+                      <span className={`text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+                        <ChevronDown className="w-5 h-5" />
                       </span>
                     </button>
                     <AnimatePresence initial={false}>
                       {isOpen && (
                         <motion.div
                           initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1, marginTop: 12 }}
+                          animate={{ height: 'auto', opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
-                          className="overflow-hidden"
+                          transition={{ duration: 0.25, ease: 'easeInOut' }}
                         >
-                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium block">
-                            {faq.a}
-                          </p>
+                          <div className="px-5 sm:px-6 pb-5 sm:pb-6 text-xs sm:text-sm text-slate-600 leading-relaxed font-semibold border-t border-slate-100 pt-3">
+                            {item.a}
+                          </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -2296,319 +2196,71 @@ export default function LandingPage() {
 
       </main>
 
-      {/* FOOTER */}
-      <footer className="bg-slate-900 text-white relative z-10 border-t border-slate-800" id="contacts">
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-            
-            <div className="md:col-span-2 space-y-4">
-              <div 
-                className="flex items-center gap-2.5 cursor-pointer select-none"
-                onClick={handleLogoClick}
-              >
-                <div className="w-9 h-9 flex items-center justify-center rounded-lg bg-emerald-500 text-white">
-                  <Building className="w-5 h-5 text-white" />
+        {/* FOOTER */}
+        <footer className="mt-32 border-t border-slate-200 bg-slate-50 py-16 sm:py-20 relative z-10">
+          <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-slate-200/60">
+              <div className="md:col-span-5 space-y-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="relative w-9 h-9 flex items-center justify-center rounded-lg bg-gradient-to-tr from-slate-900 to-slate-800 text-white shadow-md">
+                    <Building className="w-4.5 h-4.5 text-white" />
+                  </div>
+                  <span className="text-[15px] font-black uppercase tracking-wider text-slate-900">
+                    Единый Центр <span className="text-emerald-600">Недвижимости</span>
+                  </span>
                 </div>
-                <div className="font-extrabold text-base tracking-tight text-white">
-                  ЛЬГОТНАЯ ИПОТЕКА <span className="text-[#94A3B8] font-normal">| {new Date().getFullYear()}</span>
+                <p className="text-slate-500 text-xs sm:text-sm leading-relaxed max-w-sm font-semibold">
+                  Интерактивный независимый инструмент для подбора программ государственной поддержки, расчета платежей и анализа условий ипотечного кредитования.
+                </p>
+              </div>
+              
+              <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">Навигация</h4>
+                  <ul className="space-y-2.5 text-xs font-bold text-slate-600">
+                    <li><button onClick={scrollToCalculator} className="hover:text-emerald-600 transition-colors bg-transparent border-0 p-0 cursor-pointer">Калькулятор</button></li>
+                    <li><a href="#complexes" className="hover:text-emerald-600 transition-colors">Подобрать ЖК</a></li>
+                    <li><a href="#timeline" className="hover:text-emerald-600 transition-colors">Этапы программы</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">Партнерам</h4>
+                  <ul className="space-y-2.5 text-xs font-bold text-slate-600">
+                    <li><a href="https://centr-nedvighimosti.ru" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-600 transition-colors flex items-center gap-1">centr-nedvighimosti.ru <ExternalLink className="w-3 h-3" /></a></li>
+                    <li><span className="text-slate-400">Сертифицированные специалисты</span></li>
+                  </ul>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">Поддержка</h4>
+                  <ul className="space-y-2.5 text-xs font-bold text-slate-600">
+                    <li><span className="text-slate-500">По любым вопросам</span></li>
+                    <li className="text-slate-900 font-extrabold text-sm sm:text-xs">info@centr-nedvighimosti.ru</li>
+                  </ul>
                 </div>
               </div>
-              <p className="text-xs text-[#94A3B8] leading-relaxed font-semibold max-w-sm">
-                Интерактивный независимый инструмент для подбора программ государственной поддержки, расчета платежей и анализа условий ипотечного кредитования.
+            </div>
+
+            <div className="pt-8 text-[11px] text-[#64748B] leading-relaxed space-y-4 font-semibold max-w-4xl">
+              <div className="text-slate-800 font-black text-xs sm:text-[11px]">
+                © 2026 Единый Центр Недвижимости (centr-nedvighimosti.ru). Все права защищены.
+              </div>
+              <p>
+                Информация на данном сайте носит исключительно ознакомительный характер и ни при каких условиях не является публичной офертой, определяемой положениями Статьи 437 Гражданского кодекса РФ. Расчеты в калькуляторе являются предварительными. Для получения точных условий по кредитованию и государственным программам обратитесь к сертифицированному специалисту центра.
               </p>
-              
-              {/* Back Office Button link */}
-              <button
-                onClick={() => { setShowAdmin(true); }}
-                className="text-xs text-emerald-400 hover:text-emerald-300 font-bold inline-flex items-center gap-1.5 transition-all outline-hidden mt-3 cursor-pointer bg-transparent border-0"
-              >
-                <Lock className="w-3.5 h-3.5" />
-                Кабинет обработки заявок
-              </button>
-            </div>
-
-            <div className="md:col-span-2">
-              <h4 className="font-bold text-xs uppercase tracking-widest text-[#94A3B8] mb-4">Навигация</h4>
-              <ul className="space-y-2 text-xs text-slate-300 font-semibold list-none p-0 flex flex-col gap-1">
-                <li><span className="hover:text-white cursor-pointer transition-colors" onClick={scrollToCalculator}>Калькулятор</span></li>
-                <li><a href="#benefits" className="hover:text-white transition-colors">Выгоды программ</a></li>
-                <li><a href="#how" className="hover:text-white transition-colors">План расчета</a></li>
-              </ul>
-            </div>
-
-          </div>
-
-          <div className="mt-12 pt-8 border-t border-slate-800 text-center text-[11px] text-[#64748B] font-semibold space-y-3 max-w-4xl mx-auto leading-relaxed">
-            <div>
-              © 2026 Единый Центр Недвижимости (centr-nedvighimosti.ru). Все права защищены.
-            </div>
-            <div>
-              Информация на данном сайте носит исключительно ознакомительный характер и ни при каких условиях не является публичной офертой, определяемой положениями Статьи 437 Гражданского кодекса РФ. Расчеты в калькуляторе являются предварительными. Для получения точных условий по кредитованию и государственным программам обратитесь к сертифицированному специалисту центра.
-            </div>
-            <div>
-              Нажимая на кнопки на сайте, вы даете{' '}
-              <span className="underline cursor-pointer hover:text-emerald-400 transition-colors">
-                Согласие на обработку персональных данных
-              </span>{' '}
-              и соглашаетесь с{' '}
-              <span className="underline cursor-pointer hover:text-emerald-400 transition-colors">
-                Политикой конфиденциальности
-              </span>
-              .
+              <p>
+                Нажимая на кнопки на сайте, вы даете{' '}
+                <span className="underline hover:text-emerald-600 transition-colors cursor-pointer">
+                  Согласие на обработку персональных данных
+                </span>{' '}
+                и соглашаетесь с{' '}
+                <span className="underline hover:text-emerald-600 transition-colors cursor-pointer">
+                  Политикой конфиденциальности
+                </span>
+                .
+              </p>
             </div>
           </div>
-        </div>
-      </footer>
-
-      {/* REVELATION ADMIN DRAWER: REAL CLIENT-SIDE CABINET */}
-      <AnimatePresence>
-        {showAdmin && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4"
-          >
-            <motion.div 
-              initial={{ scale: 0.95, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 20 }}
-              className="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden border border-gray-200"
-            >
-              
-              {/* Cabinet Header */}
-              <div className="bg-slate-900 p-6 flex justify-between items-center text-white">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-emerald-500 rounded-lg text-white">
-                    <Lock className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-extrabold text-lg">Кабинет Заявок (СRM)</h3>
-                    <p className="text-[10px] text-slate-400 font-medium">Безопасный доступ к отправленным лидам</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => {
-                    setShowAdmin(false);
-                    setAdminCode('');
-                    setIsAdminAuthenticated(false);
-                    setAdminError('');
-                  }}
-                  className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white bg-transparent border-0 cursor-pointer"
-                >
-                  <X className="w-5.5 h-5.5" />
-                </button>
-              </div>
-
-              {/* Login block if not authenticated */}
-              {!isAdminAuthenticated ? (
-                <div className="p-8 sm:p-12 text-center max-w-sm mx-auto space-y-6">
-                  <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-500 font-semibold text-lg">
-                    <Lock className="w-6 h-6 text-slate-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-extrabold text-slate-900 text-base">Авторизация владельца сайта</h4>
-                    <p className="text-xs text-slate-500 mt-1">Введите пароль для просмотра списка лидов рекламной кампании.</p>
-                  </div>
-
-                  <form onSubmit={handleAdminVerify} className="space-y-4 text-left">
-                    <div>
-                      <input 
-                        type="password"
-                        placeholder="Код доступа (введите '2026' или 'admin')"
-                        value={adminCode}
-                        onChange={(e) => setAdminCode(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-slate-900 focus:outline-hidden"
-                        required
-                        autoFocus
-                      />
-                    </div>
-                    {adminError && <p className="text-xs text-rose-600 font-bold text-center">{adminError}</p>}
-                    <button 
-                      type="submit"
-                      className="w-full bg-slate-950 text-white font-bold py-3 text-xs uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-colors cursor-pointer border-0"
-                    >
-                      Посмотреть лиды
-                    </button>
-                  </form>
-                </div>
-              ) : (
-                /* ACTUAL CRM DATA PANELS */
-                <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
-                  
-                  {/* Top quick stats widget */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="bg-slate-50 border border-gray-200/60 rounded-xl p-4 text-center">
-                      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Всего Лидов</span>
-                      <span className="block text-2xl font-black text-slate-900 mt-0.5">{leads.length}</span>
-                    </div>
-                    <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-4 text-center">
-                      <span className="text-[10px] uppercase font-bold text-emerald-700 tracking-wider">Купить жилье</span>
-                      <span className="block text-2xl font-black text-emerald-900 mt-0.5">
-                        {leads.filter(l => l.goal === 'buy').length}
-                      </span>
-                    </div>
-                    <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-4 text-center">
-                      <span className="text-[10px] uppercase font-bold text-amber-700 tracking-wider">Продать жилье</span>
-                      <span className="block text-2xl font-black text-amber-900 mt-0.5">
-                        {leads.filter(l => l.goal === 'sell').length}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Actions buttons */}
-                  <div className="flex justify-between items-center border-t border-gray-100 pt-4">
-                    <span className="text-xs font-extrabold text-slate-800 uppercase">Список заявителей {leads.length > 0 && `(${leads.length})`}</span>
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={exportToCSV}
-                        disabled={leads.length === 0}
-                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer border-0"
-                      >
-                        <Download className="w-3.5 h-3.5" /> Экспорт CSV (Excel)
-                      </button>
-                      <button 
-                        onClick={handleClearAllLeads}
-                        disabled={leads.length === 0}
-                        className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 disabled:opacity-40 border border-rose-200 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" /> Очистить все
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Table with applicants */}
-                  {leads.length === 0 ? (
-                    <div className="py-12 border border-dashed border-gray-200 rounded-2xl text-center space-y-3">
-                      <p className="text-sm text-slate-500 font-semibold">На данный момент заявок нет</p>
-                      <p className="text-xs text-slate-400">Заполните форму калькулятора, чтобы смоделировать поступление нового лида</p>
-                      <button 
-                        onClick={() => {
-                          setShowAdmin(false);
-                          scrollToCalculator();
-                        }}
-                        className="bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg text-xs font-black text-slate-800 border-0 cursor-pointer"
-                      >
-                        Перейти к заполнению
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto border border-gray-100 rounded-xl">
-                      <table className="w-full text-left border-collapse text-xs">
-                        <thead>
-                          <tr className="bg-slate-50 border-b border-gray-100 text-[#475569] font-bold">
-                            <th className="p-3.5">Дата / ID</th>
-                            <th className="p-3.5">ФИО</th>
-                            <th className="p-3.5">Телефон для связи</th>
-                            <th className="p-3.5">Запрос / Капитал</th>
-                            <th className="p-3.5 text-right">Расчет</th>
-                            <th className="p-3.5 text-center">Действия</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                          {leads.map((l) => (
-                            <tr key={l.id} className="hover:bg-slate-50/70 transition-colors text-slate-700 font-semibold border-b border-gray-100/60">
-                              <td className="p-3.5">
-                                <span className="block text-slate-900 font-black">{l.submittedAt}</span>
-                                <span className="text-[10px] text-zinc-400 font-mono">{l.id}</span>
-                              </td>
-                              <td className="p-3.5">
-                                <span className="block font-black text-slate-900">
-                                  {l.lastName ? `${l.name} ${l.lastName}` : l.name}
-                                </span>
-                                {l.contactMethod && (
-                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm bg-sky-50 text-sky-700 text-[9px] font-black uppercase tracking-wider mt-1 mr-1">
-                                    💬 {l.contactMethod}
-                                  </span>
-                                )}
-                                {l.telegramUsername && (
-                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm bg-emerald-50 text-emerald-700 text-[9px] font-black uppercase tracking-wider mt-1">
-                                    ✈️ {l.telegramUsername.startsWith('@') ? l.telegramUsername : '@' + l.telegramUsername}
-                                  </span>
-                                )}
-                              </td>
-                              <td className="p-3.5">
-                                <div className="flex items-center gap-1.5 matches-phone">
-                                  <span className="font-extrabold text-slate-900">{l.phone}</span>
-                                  <button 
-                                    onClick={() => copyValue(l.phone, l.id)}
-                                    className="p-1 hover:bg-gray-100 rounded text-slate-400 hover:text-slate-900 transition-colors relative bg-transparent border-0 cursor-pointer"
-                                    title="Скопировать телефон"
-                                  >
-                                    <Copy className="w-3.5 h-3.5" />
-                                    {copiedId === l.id && (
-                                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[9px] py-0.5 px-1.5 rounded shadow-sm whitespace-nowrap">
-                                        Скопировано!
-                                      </span>
-                                    )}
-                                  </button>
-                                </div>
-                              </td>
-                              <td className="p-3.5 space-y-1">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="font-extrabold text-[#111827]">
-                                    {l.goal === 'buy' ? '🏠 Покупка' : '🔑 Продажа'}
-                                  </span>
-                                  {l.rooms && (
-                                    <span className="px-1.5 py-0.5 rounded bg-slate-100 text-[#475569] text-[9px] font-black">
-                                      {l.rooms}
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="text-[10px] text-slate-500 font-medium leading-relaxed space-y-0.5">
-                                  <div>Программа: <span className="text-slate-800 font-extrabold">{l.program}</span></div>
-                                  <div>Маткапитал: <span className="text-slate-800 font-extrabold">{l.useMatCap ? 'Да' : 'Нет'}</span></div>
-                                  {l.goal === 'buy' && (
-                                    <>
-                                      {l.locationType && <div>Тип объекта: <span className="text-emerald-700 font-bold">{l.locationType}</span></div>}
-                                      {l.readiness && <div>Сроки: <span className="text-amber-700 font-bold">{l.readiness}</span></div>}
-                                    </>
-                                  )}
-                                  {l.goal === 'sell' && (
-                                    <>
-                                      {l.condition && <div>Состояние ремонта: <span className="text-indigo-700 font-bold">{l.condition}</span></div>}
-                                      {l.urgency && <div>Срочность: <span className="text-rose-700 font-bold">{l.urgency}</span></div>}
-                                    </>
-                                  )}
-                                </div>
-                              </td>
-                              <td className="p-3.5 text-right">
-                                <span className="block text-slate-900 font-black">
-                                  {l.propertyValue.toLocaleString('ru-RU')} ₽
-                                </span>
-                                {l.goal === 'buy' && (
-                                  <span className="text-[10px] text-emerald-600 block font-bold">
-                                    {l.monthlyPayment.toLocaleString('ru-RU')} ₽/мес
-                                  </span>
-                                )}
-                              </td>
-                              <td className="p-3.5 text-center">
-                                <button 
-                                  onClick={() => handleDeleteLead(l.id)}
-                                  className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors cursor-pointer border-0"
-                                  title="Удалить лид"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-
-                  <div className="text-[10px] text-[#64748B] font-semibold text-center mt-3 pt-3 border-t border-gray-100">
-                    Панель полностью энергонезависима и работает изолированно в вашем браузере. Вы можете экспортировать заявки в Excel в любое время дня.
-                  </div>
-
-                </div>
-              )}
-
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </footer>
 
     </div>
   );
