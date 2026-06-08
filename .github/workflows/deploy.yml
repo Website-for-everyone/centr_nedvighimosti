@@ -3,8 +3,8 @@ name: Deploy Next.js to GitHub Pages
 
 on:
   push:
-    branches: ["main", "master"] # Runs on push to main or master
-  workflow_dispatch: # Allows manual triggers from Actions tab
+    branches: ["main", "master"]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -30,6 +30,9 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+
+      - name: Clear npm cache
+        run: npm cache clean --force
 
       - name: Install dependencies
         run: npm ci
