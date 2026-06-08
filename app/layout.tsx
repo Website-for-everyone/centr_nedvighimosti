@@ -1,37 +1,33 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Script from "next/script"; // ВАЖНО: Импортируем умные скрипты Next.js
+import type {Metadata} from 'next';
+import { Inter } from 'next/font/google';
+import Script from 'next/script';
+import './globals.css'; // Global styles
 
-const inter = Inter({ subsets: ["latin", "cyrillic"] });
+const inter = Inter({
+  subsets: ['latin', 'cyrillic'],
+  variable: '--font-sans',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-  title: "Единый Центр Недвижимости",
-  description: "Интерактивный расчет ипотеки и подбор жилья",
+  title: 'Центр Недвижимости — Расчет Льготной Ипотеки',
+  description: 'Продажа и покупка квартир с субсидией, льготной ипотекой и маткапиталом. Быстрый и честный расчет.',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  
-  // ⚡ ВСТАВЬ СЮДА СВОЙ ID СЧЕТЧИКА ИЗ КАБИНЕТА ЯНДЕКС МЕТРИКИ (только цифры в кавычках)
-  const METRIKA_ID = "ТВОЙ_НОМЕР_СЧЕТЧИКА"; 
-
+export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="ru">
-      <head>
-        {/* Кристально правильное подключение Яндекс Метрики для Next.js App Router */}
+    <html lang="ru" className={`${inter.variable}`}>
+      <body suppressHydrationWarning className="font-sans antialiased text-gray-900 bg-slate-50 min-h-screen selection:bg-rose-100 selection:text-rose-900">
+        {/* Yandex.Metrika counter */}
         <Script id="yandex-metrika" strategy="afterInteractive">
           {`
             (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
             m[i].l=1*new Date();
-            for (var j = 0; j < e.scripts.length; j++) {if (e.scripts[j].src === r) { return; }}
+            for (var j = 0; j < e.length; j++) {if (e[j].src === r) { return; }}
             k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
             (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-            ym(${METRIKA_ID}, "init", {
+            ym(109697187, "init", {
                  clickmap:true,
                  trackLinks:true,
                  accurateTrackBounce:true,
@@ -39,20 +35,17 @@ export default function RootLayout({
             });
           `}
         </Script>
-      </head>
-      <body className={inter.className}>
-        {children}
-        
-        {/* Исправленный тег noscript, адаптированный под правила JSX/React */}
         <noscript>
           <div>
             <img 
-              src={`https://mc.yandex.ru/watch/${METRIKA_ID}`} 
-              style={{ position: "absolute", left: "-9999px" }} 
+              src="https://mc.yandex.ru/watch/109697187" 
+              style={{ position: 'absolute', left: '-9999px' }} 
               alt="" 
+              referrerPolicy="no-referrer"
             />
           </div>
         </noscript>
+        {children}
       </body>
     </html>
   );

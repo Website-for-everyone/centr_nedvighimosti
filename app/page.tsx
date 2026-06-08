@@ -33,7 +33,8 @@ import {
   Key,
   MapPin,
   ExternalLink,
-  ChevronLeft
+  ChevronLeft,
+  Sliders
 } from 'lucide-react';
 
 // Define Lead type
@@ -57,6 +58,7 @@ interface Lead {
   condition?: string;
   urgency?: string;
   contactMethod?: string;
+  details?: string[];
 }
 
 interface Complex {
@@ -73,14 +75,13 @@ interface Complex {
   websiteUrl: string;
 }
 
-// ИСПРАВЛЕНО: Добавлен префикс /centr_nedvighimosti ко всем путям, так как используются нативные теги <img>
 const COMPLEXES: Complex[] = [
   {
     name: "ЖК «Иремель Тауэр»",
     address: "Республика Башкортостан, г. Уфа, Кировский р-н, ул. Менделеева, стр. 137",
     completion: "Сдан",
     developer: "Prime Development",
-    imgUrl: "/centr_nedvighimosti/iremel.jpeg", // Исправлено с 'img' на 'imgUrl'
+    imgUrl: "/iremel.jpeg",
     prices: [
       { type: "Студия", price: "от 10,1 млн ₽" },
       { type: "1-комн", price: "от 26,5 млн ₽" },
@@ -95,7 +96,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Октябрьский р-н, ул. Проспект Октября, д. 75",
     completion: "4 кв. 2026",
     developer: "Prime Development",
-    imgUrl: "/centr_nedvighimosti/prime.jpeg",
+    imgUrl: "/prime.jpeg",
     prices: [
       { type: "Студия", price: "от 7,6 млн ₽" },
       { type: "1-комн", price: "от 10,6 млн ₽" },
@@ -110,7 +111,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Октябрьский р-н, ул. Комсомольская, д. 104",
     completion: "3 кв. 2026",
     developer: "СтройТЭК",
-    imgUrl: "/centr_nedvighimosti/aurus.jpeg",
+    imgUrl: "/aurus.jpeg",
     prices: [
       { type: "1-комн", price: "от 9,2 млн ₽" },
       { type: "2-комн", price: "от 11 млн ₽" },
@@ -125,7 +126,7 @@ const COMPLEXES: Complex[] = [
     address: "Республика Башкортостан, г. Уфа, Кировский р-н, ул. Геофизиков, д. 6",
     completion: "3 кв. 2029",
     developer: "ГК БРИГ",
-    imgUrl: "/centr_nedvighimosti/geos.jpeg",
+    imgUrl: "/geos.jpeg",
     prices: [
       { type: "Студия", price: "от 6,2 млн ₽" },
       { type: "1-комн", price: "от 7,5 млн ₽" },
@@ -133,14 +134,14 @@ const COMPLEXES: Complex[] = [
       { type: "3-комн", price: "от 12,9 млн ₽" }
     ],
     officialSearch: "ЖК Геос",
-    websiteUrl: "https://yabs.yandex.ru/count/WnOejI_zOoVX2Lbp0qKO02ChfhxMyk05IS2SG1MV0DSR9g0t_QeUWo3WzGZeqETpkRDd-vqxt_Mry_KxNc-um-MPSVJ3KwN-y039-E49-gdUA26412GqD4GD2l6KsZcUjlNeXb8EQv5HaVEPGsfBfpZkp9quVakZpgbpQkTuvhapEfNYKkWDnV5dTEgK4bsFae2cGZE0alAwhkkY4HXtm9HD5rSsMCGzKIgRunDJkZyOT1nDB4OGzm7K101qcEuMS9eBQ48N4AOBy2PG01U49ZmAq8BGPAe0BGXFyWhGWl3aI05Q49xW5Q05uOcH0hGWFBahG0l2ao85Q45u0Yv02y8I9WLeGLZoLu0MX2L-1MX1M28kG0l2aYK5Q3lOBkPyJGJcU43w5gERqwNz1ALCcK9hwb2DQ1H_ui_dzFdCxLiwXU9tBONYqMSUpQDFNEhCfRO4E5W_PVL6PCSQLZ6yyN8vuOK142RdymsJZPSUs-m-4703E80DNE-ZQ-oBNPhV3YgD6dOCkW3U4b5K1E3IKpLb3aQoVcW1qWtPek5sPM08ma9aP047jDeTFECbJ56ArGLp1NjDy7pq-GLMMTYQm3902g0pAfc57JHPXVBD5J05SvE77eMjfw33J2Zx9Tfp3BcfOy5CJDWzHap7w1eKk1i_WA8tkohm0OC03G1fN6ZgMT3yqkCcbnutT_yRSVgez1y-mXlJFvX2b0_n_temxDRtUZ3irkVw8u1zVpVWhucEhsL-0GFxMUONC32c6OPEabc6ePDaZdTTrtNQx1cbX21PUdrDqllIwskItj9ZllozskmQFVbx6TdB_9Zsu0JqAJgp_thTiSiPej_IkiwaEtOvG_JQFwc3haxIPxtNVGyl42YoALcqQKSqCrSgbSeGT29Ds34w1cONvT-guYkWoDUH8p3yTm06AjbF01og93bG4LJ7UAx0V9BHQ3fMwZp0bS867ztLF_AtuKP9CSQZP-jAp5862i15D-LUJR1m0mYpUraE-DU-n2UEs3RMlFO8GxhjS0DdAksBr7CrfQO8nvRjKl3CfC2eetvd2YeQywBkTGVFOiYJPy89VLIUqwzNp6pnMUsoj1ODYx3IDq_8~2?etext=2202.2fA1pKauuZqPQPMGyMafilL6y63tt23alRX9Hz_XKel1uLs4Z3w41xyZDzwgpwTMSJpKfqwR837qLcnEXk4oa2N0dnVzbG9xeHlnZXhwamY.965592f2e01d40a527a540a7cbda81a493ebb492&from=yandex.ru%3Bsearch%26%23x2F%3B%3Bweb%3B%3B0%3B&q=%D0%B6%D0%BA+%D0%B3%D0%B5%D0%BE%D1%81+%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%81%D0%B0%D0%B9%D1%82"
+    websiteUrl: "https://yabs.yandex.ru/count/WnOejI_zOoVX2Lbp0qKO02ChfhxMyk05IS2SG1MV0DSR9g0t_QeUWo3WzGZeqETpkRDd-vqxt_Mry_KxNc-um-MPSVJ3KwN-y039-E49-gdUA26412GqD4GD2l6KsZcUjlNeXb8EQv5HaVEPGsfBfpZkp9quVakZpgbpQkTuvhapEfNYKkWDnV5dTEgK4bsFae2cGZE0alAwhkkY4HXtm9HD5rSsMCGzKIgRunDJkZyOT1nDB4OGzm7K101qcEuMS9eBQ48N4AOBy2PG01U49ZmAq8BGPAe0BGXFyWhGWl3aI05Q49xW5Q05uOcH0hGWFBahG0l2ao85Q45u0Yv02y8I9WLeGLZoLu0MX2L-1MX1M28kG0l2aYK5Q3lOBkPyJGJcU43w5gERqwNz1ALCcK9hwb2DQ1H_ui_dzFdCxLiwXU9tBONYqMSUpQDFNEhCfRO4E5W_PVL6PCSQLZ6yyN8vuOK142RdymsJZPSUs-m-4703E80Dt07Ahg3uxQ3Ig677e0lWBU6q9m2NdgefqqrUJqfgn1oCPFtG0gGRiaN3xSh048I5oCW23kXQBxY2lIPuFlhy0giiR4rWgI2SI0UW0GixQB8AvPihO0hc9eymXQsdeCDCA5lW8dSLGsxgM30J4tQF4TCnEinNWRjSHCURumfym2100q0Q5vfw5ZI_zBZ9fSVDtVz6xqQ4-yDVpy_fWvNI2FzN0nYGxzK01kHpE_W8-_jIxqdaryROS_pP67kEJ7C58tlCSWKZUymnS-bbBlTTrtMTDjDOUrPS1c247AFt0HWXn-WjyysNRS9oL9xynSXHKNvCUt02LPnu4VqNoaHaJ6RAmjNbjNzo3ipCvhFUwnwGoXeKh4ckhF4HpSoLIgKo19t83tQCZe6PfFpGA1jG6VFGfIWZ_96ySIJUi1AWoljqvQ22terrw0YKuBa8ZftlFa_ShGW3CdB8KdeB-ENifLHVh_QVtEC2BwSSYYoHK4MYLFv549Zo9CUuloX_UheuEhld9UssFKxyJMLp35iFIcR4j1QLJzKcOb592okjbtWF~2?etext=2202.2fA1pKauuZqPQPMGyMafilL6y63tt23alRX9Hz_XKel1uLs4Z3w41xyZDzwgpwTMSJpKfqwR837qLcnEXk4oa2N0dnVzbG9xeHlnZXhwamY.965592f2e01d40a527a540a7cbda81a493ebb492&from=yandex.ru%3Bsearch%26%23x2F%3B%3Bweb%3B%3B0%3B&q=%D0%B6%D0%BA+%D0%B3%D0%B5%D0%BE%D1%81+%D0%BE%D1%84%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%81%D0%B0%D0%B9%D1%82"
   },
   {
     name: "ЖК «Terle park»",
     address: "Республика Башкортостан, г. Уфа, Кировский р-н, ул. Авроры, д.18/1",
     completion: "Сдан - 3 кв. 2026",
     developer: "ГК Садовое кольцо",
-    imgUrl: "/centr_nedvighimosti/terle.jpeg",
+    imgUrl: "/terle.jpeg",
     prices: [
       { type: "Студия", price: "от 6,2 млн ₽" },
       { type: "1-комн", price: "от 7,5 млн ₽" },
@@ -152,54 +153,73 @@ const COMPLEXES: Complex[] = [
   }
 ];
 
+// Safe helper to generate a unique ID outside of the React component's render body to adhere to stability constraints
 function generateLeadId(): string {
   return 'L-' + Math.floor(Math.random() * 900000 + 100000);
 }
 
 export default function LandingPage() {
+  // Mobile menu state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Form states
   const [calcGoal, setCalcGoal] = useState<'buy' | 'sell'>('buy');
   const [propertyValue, setPropertyValue] = useState<number>(7500000);
   const [downPayment, setDownPayment] = useState<number>(1500000);
   const [useMatCap, setUseMatCap] = useState<boolean>(true);
-  const [mortgageProgram, setMortgageProgram] = useState<string>('family'); 
+  const [mortgageProgram, setMortgageProgram] = useState<string>('family'); // family, it, standard, state
   
+  // Custom contact form states
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Expanded Quiz state variables
   const [lastName, setLastName] = useState('');
-  const [quizRooms, setQuizRooms] = useState('2-комнатная'); 
-  const [quizLocationType, setQuizLocationType] = useState('Москва'); 
-  const [quizReadiness, setQuizReadiness] = useState('В течение 3-6 месяцев'); 
-  const [quizCondition, setQuizCondition] = useState('Семейная'); 
-  const [quizUrgency, setQuizUrgency] = useState('В течение 1-2 месяцев'); 
-  const [quizContactMethod, setQuizContactMethod] = useState('Telegram'); 
-  const [quizTelegramUsername, setQuizTelegramUsername] = useState('');
-  const [quizStep, setQuizStep] = useState(1); 
+  const [quizCity, setQuizCity] = useState('Уфа');
+  // Buying path states
+  const [quizBuyPropertyType, setQuizBuyPropertyType] = useState('Новостройка (хочу квартиру в сданном или строящемся доме)');
+  const [quizRooms, setQuizRooms] = useState('2-комнатная'); // default (Студия / 1-комнатная, 2-комнатная, 3-комнатная и более, Свободная планировка)
+  const [quizPaymentMethod, setQuizPaymentMethod] = useState('Семейная ипотека / Льготная программа');
+  const [quizDownPayment, setQuizDownPayment] = useState('От 500 000 до 1 500 000 руб.');
+  const [quizReadiness, setQuizReadiness] = useState('В течение 1–2 месяцев');
 
+  // Selling path states
+  const [quizSellPropertyType, setQuizSellPropertyType] = useState('Квартира (вторичка)');
+  const [quizSellRooms, setQuizSellRooms] = useState('2');
+  const [quizSellLocation, setQuizSellLocation] = useState('');
+  const [quizSellCondition, setQuizSellCondition] = useState('Хороший ремонт (можно заехать и жить)');
+  const [quizSellObstacles, setQuizSellObstacles] = useState('Нет, квартира чистая, собственник один');
+  const [quizSellUrgency, setQuizSellUrgency] = useState('Альтернативная сделка (продаем эту, чтобы сразу купить другую)');
+
+  const [quizContactMethod, setQuizContactMethod] = useState('Telegram'); // default
+  const [quizTelegramUsername, setQuizTelegramUsername] = useState('');
+  const [quizStep, setQuizStep] = useState(1); // steps: 1 (goal), 2 (params), 3 (contacts)
+
+  // General feedback/interactive states
   const [activeFaqIndex, setActiveFaqIndex] = useState<number | null>(0);
   const [activeTimelineStep, setActiveTimelineStep] = useState<number>(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeAngle, setActiveAngle] = useState(180);
   const [wheelRadius, setWheelRadius] = useState<number>(360);
 
+  // Complex carousel state
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedComplex, setSelectedComplex] = useState<Complex | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isCarouselHovered, setIsCarouselHovered] = useState(false);
 
+  // Dynamic header changing words
   const dynamicWords = [
-    { word: 'Материнским Капиталом', prep: 'с' },
+    { word: 'Маткапиталом', prep: 'с' },
     { word: 'IT-льготами', prep: 'с' },
-    { word: 'Гос. Поддержкой', prep: 'с' },
-    { word: 'Семейными Льготами', prep: 'с' },
-    { word: 'легкостью', prep: 'с' },
+    { word: 'Господдержкой', prep: 'с' },
+    { word: 'Семейной ипотекой', prep: 'с' },
+    { word: 'Легкостью', prep: 'с' },
     { word: 'Скоростью', prep: 'со' },
-    { word: 'выгодой', prep: 'с' },
-    { word: 'нами', prep: 'с' }
+    { word: 'Выгодой', prep: 'с' },
+    { word: 'Нами', prep: 'с' }
   ];
 
   const [dynamicWordIndex, setDynamicWordIndex] = useState(0);
@@ -211,6 +231,7 @@ export default function LandingPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Monitor screen size
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const checkMobile = () => {
@@ -222,6 +243,7 @@ export default function LandingPage() {
     }
   }, []);
 
+  // Automatic scrolling for housing complexes
   useEffect(() => {
     if (isCarouselHovered || selectedComplex) return;
     const maxSlide = isMobile ? COMPLEXES.length - 2 : COMPLEXES.length - 3;
@@ -233,8 +255,10 @@ export default function LandingPage() {
     return () => clearInterval(interval);
   }, [isMobile, isCarouselHovered, selectedComplex]);
 
-  const MAT_CAP_AMOUNT = 729000; 
+  // Standard constants for calculations
+  const MAT_CAP_AMOUNT = 729000; // 2026 typical maternity capital amount
   
+  // Monitor screen size for Active Station dynamic alignment and wheel radius
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const updateDimensions = () => {
@@ -244,6 +268,7 @@ export default function LandingPage() {
         setActiveAngle(90);
       }
 
+      // Responsive wheel radius
       if (window.innerWidth >= 1280) {
         setWheelRadius(440);
       } else if (window.innerWidth >= 1024) {
@@ -259,12 +284,17 @@ export default function LandingPage() {
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
+  // Scroll listener for Orbit Stepper
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     let requestRef: number;
     
     const handleScroll = () => {
+      if (window.innerWidth < 1024) {
+        return; // Manual slide controls on mobile/tablet to avoid overflow & jank
+      }
+
       const container = document.getElementById('how');
       if (!container) return;
 
@@ -272,12 +302,15 @@ export default function LandingPage() {
       const containerHeight = rect.height;
       const windowHeight = window.innerHeight;
 
+      // Calculate progress of scroll through this sticky container
+      // progress is 0 when container starts to scroll, 1 when it is fully scrolled
       let progress = -rect.top / (containerHeight - windowHeight);
       if (progress < 0) progress = 0;
       if (progress > 1) progress = 1;
 
       setScrollProgress(progress);
       
+      // Map to discrete step indexes (0-7) using math rounding for focus mapping
       const stepValue = Math.min(7, Math.max(0, Math.round(progress * 7)));
       setActiveTimelineStep(stepValue);
     };
@@ -289,6 +322,7 @@ export default function LandingPage() {
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', handleScroll);
     
+    // Run initially with small delay for accurate mounting dimensions
     setTimeout(handleScroll, 100);
 
     return () => {
@@ -298,6 +332,7 @@ export default function LandingPage() {
     };
   }, []);
 
+  // Update input values directly with safe validation check
   const handlePropertyValueChange = (val: number) => {
     setPropertyValue(val);
     if (downPayment > val) {
@@ -313,17 +348,19 @@ export default function LandingPage() {
     }
   };
 
+  // Calculate actual down payment incorporating maternity capital
   const effectiveDownPayment = useMatCap 
     ? Math.min(downPayment + MAT_CAP_AMOUNT, propertyValue)
     : downPayment;
 
+  // Rates in Russian currency & banking standards
   const getInterestRate = () => {
     if (calcGoal === 'sell') return 0;
     switch (mortgageProgram) {
-      case 'it': return 0.05; 
-      case 'family': return 0.06; 
-      case 'state': return 0.08; 
-      case 'standard': return 0.16; 
+      case 'it': return 0.05; // 5%
+      case 'family': return 0.06; // 6%
+      case 'state': return 0.08; // 8%
+      case 'standard': return 0.16; // 16% market average estimation
       default: return 0.06;
     }
   };
@@ -347,8 +384,9 @@ export default function LandingPage() {
     if (annualRate === 0) return { monthly: 0, loanAmount: 0 };
 
     const monthlyRate = annualRate / 12;
-    const months = 240; 
+    const months = 240; // 20 years average
 
+    // PMT formula
     const monthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
     return {
       monthly: Math.round(monthlyPayment),
@@ -358,6 +396,7 @@ export default function LandingPage() {
 
   const mortgageResult = calculateMortgage();
 
+  // Scroll handler helper
   const scrollToCalculator = () => {
     const el = document.getElementById('calculator');
     if (el) {
@@ -365,6 +404,7 @@ export default function LandingPage() {
     }
   };
 
+  // Scroll to step in continuous Orbit section
   const scrollToStep = (idx: number) => {
     const container = document.getElementById('how');
     if (!container) return;
@@ -382,6 +422,7 @@ export default function LandingPage() {
     });
   };
 
+  // 8 steps textual copy for Awwwards-style orbital stepper
   const orbitSteps = [
     {
       title: 'Заявка на сайте',
@@ -425,6 +466,7 @@ export default function LandingPage() {
     }
   ];
 
+  // Carousel slide handlers
   const handleNext = () => {
     setActiveSlide((prev) => {
       const maxSlide = isMobile ? COMPLEXES.length - 2 : COMPLEXES.length - 3;
@@ -439,11 +481,30 @@ export default function LandingPage() {
     });
   };
 
+  // Submit dynamic lead
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim() || !phoneNumber.trim()) return;
 
     setIsSubmitting(true);
+
+    const isBuy = calcGoal === 'buy';
+    const hasMortgage = quizPaymentMethod !== '100% наличный расчет';
+
+    const quizDetails = isBuy ? [
+      `🏢 *Недвижимость:* ${quizBuyPropertyType}`,
+      `🚪 *Комнаты:* ${quizRooms}`,
+      `💳 *Способ оплаты:* ${quizPaymentMethod}`,
+      ...(hasMortgage ? [`💸 *Первоначальный взнос:* ${quizDownPayment}`] : []),
+      `⏳ *Сроки:* ${quizReadiness}`
+    ] : [
+      `🏢 *Объект для продажи:* ${quizSellPropertyType}`,
+      `🚪 *Комнаты:* ${quizSellRooms}`,
+      `📍 *Район/улица в Уфе:* ${quizSellLocation || 'Не указан'}`,
+      `✨ *Состояние:* ${quizSellCondition}`,
+      `⚠️ *Обременения/Нюансы:* ${quizSellObstacles}`,
+      `⚡ *Срочность и причина:* ${quizSellUrgency}`
+    ];
 
     const newLead: Lead = {
       id: generateLeadId(),
@@ -457,25 +518,31 @@ export default function LandingPage() {
       program: getProgramName(),
       monthlyPayment: mortgageResult.monthly,
       submittedAt: new Date().toLocaleString('ru-RU'),
-      rooms: quizRooms,
-      locationType: calcGoal === 'buy' ? quizLocationType : undefined,
-      readiness: calcGoal === 'buy' ? quizReadiness : undefined,
-      condition: calcGoal === 'sell' ? quizCondition : undefined,
-      urgency: calcGoal === 'sell' ? quizUrgency : undefined,
+      rooms: isBuy ? quizRooms : quizSellRooms,
+      locationType: isBuy ? 'Уфа' : (quizSellLocation || 'Уфа'),
+      readiness: isBuy ? quizReadiness : quizSellObstacles,
+      condition: isBuy ? quizPaymentMethod : quizSellCondition,
+      urgency: isBuy ? undefined : quizSellUrgency,
       contactMethod: quizContactMethod,
       telegramUsername: quizContactMethod === 'Telegram' ? quizTelegramUsername : undefined,
+      details: quizDetails
     };
 
     try {
-      await fetch('/api/lead', {
+      // Send the lead to our backend API route which handles Telegram delivery
+      const targetUrl = typeof window !== 'undefined' ? `${window.location.origin}/api/lead` : '/api/lead';
+      const response = await fetch(targetUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newLead),
       });
+      if (!response.ok) {
+        console.warn('Backend lead dispatch returned non-ok status:', response.status);
+      }
     } catch (err) {
-      console.error('Failed to dispatch lead integration:', err);
+      console.warn('Failed to dispatch lead integration:', err);
     }
 
     try {
@@ -486,7 +553,7 @@ export default function LandingPage() {
         localStorage.setItem('housing_leads', JSON.stringify(updatedLeads));
       }
     } catch (err) {
-      console.error('Failed to save housing lead locally:', err);
+      console.warn('Failed to save housing lead locally:', err);
     }
 
     setIsSubmitting(false);
@@ -496,8 +563,9 @@ export default function LandingPage() {
   return (
     <div className="relative min-h-screen text-slate-800 bg-linear-to-b from-white via-[#F8FAFC] to-[#F1F5F9] overflow-x-clip">
       
-      {/* Dynamic Background Video */}
+      {/* Dynamic Background Video/Ambient Color Frame */}
       <div className="absolute inset-x-0 top-0 h-[100vh] lg:h-[110vh] z-0 overflow-hidden select-none pointer-events-none">
+        {/* We use standard HTML5 video tag with beautiful ambient blends */}
         <video 
           className="w-full h-full object-cover opacity-[0.42] scale-101"
           autoPlay 
@@ -505,11 +573,12 @@ export default function LandingPage() {
           muted 
           playsInline
         >
-          {/* ИСПРАВЛЕНО: Добавлен префикс репозитория для видео */}
-          <source src="/centr_nedvighimosti/video.mp4" type="video/mp4" />
+          <source src="https://www.image2url.com/r2/default/videos/1780893675052-69573059-75c4-4276-a861-26ea93656ae7.mp4" type="video/mp4" />
         </video>
+        {/* Fading gradient overlay at the bottom so it fades out seamlessly into the light page body */}
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#F8FAFC] via-[#F8FAFC]/30 to-transparent" />
         
+        {/* Soft elegant liquid circles to represent modern glassmorphism refractions and luxury */}
         <div className="absolute top-1/4 -left-1/4 w-[60vw] h-[60vw] rounded-full bg-linear-to-tr from-sky-100/20 via-violet-100/10 to-rose-100/5 blur-3xl animate-pulse duration-10000" />
         <div className="absolute top-2/3 -right-1/4 w-[50vw] h-[50vw] rounded-full bg-linear-to-bl from-teal-50/30 via-emerald-50/10 to-blue-50/5 blur-3xl animate-pulse duration-8000" />
       </div>
@@ -547,6 +616,7 @@ export default function LandingPage() {
 
           {/* Action Button */}
           <div className="hidden sm:flex items-center gap-4">
+            {/* Liquid Glass Styled Button */}
             <button 
               onClick={scrollToCalculator}
               className="relative overflow-hidden group px-6 py-3 rounded-xl text-xs uppercase font-extrabold tracking-widest text-white bg-slate-900 hover:bg-slate-800 border border-slate-700/20 shadow-xs active:scale-[0.98] transition-all cursor-pointer"
@@ -615,44 +685,89 @@ export default function LandingPage() {
         <section className="mb-20 md:mb-28 lg:mb-32">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
-            {/* Left Copy */}
+            {/* Left Copy: Display Typography with liquid glass layout */}
             <div className="lg:col-span-7 flex flex-col items-start text-left bg-white/20 sm:bg-white/30 backdrop-blur-2xl border border-white/50 p-6 sm:p-10 rounded-[32px] shadow-[0_32px_64px_-16px_rgba(30,41,59,0.06)] relative overflow-hidden">
+              {/* Glass liquid ambient reflection overlay */}
               <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 pointer-events-none" />
               
+              {/* Luxury gold/slate badge */}
               <div className="relative z-10 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-6">
                 <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
                 Государственные субсидии 2026
               </div>
 
-              <h1 className="relative z-10 text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.08] mb-6 min-h-[2.8em] sm:min-h-[2.2em]">
+              {/* Bold Headline (Apple Style typography hierarchy) */}
+              <h1 className="relative z-10 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.12] mb-6">
                 Честный расчет <br className="hidden sm:inline" />
                 ипотеки{' '}
-                <span className="inline-flex flex-wrap items-center gap-x-2">
-                  <span>{dynamicWords[dynamicWordIndex].prep}</span>
-                  <span className="relative inline-block">
-                    <span className="invisible select-none pointer-events-none whitespace-nowrap">
-                      {dynamicWords[dynamicWordIndex].word}
+                <span className="inline-flex flex-wrap items-center gap-x-1.5 text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">
+                  <span className="text-slate-800">{dynamicWords[dynamicWordIndex].prep}</span>
+                  <span className="relative inline-block ml-1 align-middle">
+                    {/* Invisible template to dynamically preserve space avoiding layout shift */}
+                    <span className={`invisible select-none pointer-events-none ${dynamicWords[dynamicWordIndex].word.includes(' ') ? '' : 'whitespace-nowrap'}`}>
+                      {dynamicWords[dynamicWordIndex].word.includes(' ') ? (
+                        <span className="inline-block text-left">
+                          {dynamicWords[dynamicWordIndex].word.split(' ').map((w, idx) => (
+                            <span key={idx} className="block">{w}</span>
+                          ))}
+                        </span>
+                      ) : (
+                        dynamicWords[dynamicWordIndex].word
+                      )}
                     </span>
                     <AnimatePresence mode="wait">
                       <motion.span
                         key={dynamicWordIndex}
-                        initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
+                        initial={{ opacity: 0, y: 8, filter: 'blur(3px)' }}
                         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, y: -12, filter: 'blur(4px)' }}
-                        transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className="absolute left-0 top-0 w-full h-full text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500 whitespace-nowrap"
+                        exit={{ opacity: 0, y: -8, filter: 'blur(3px)' }}
+                        transition={{ duration: 0.25, ease: 'easeOut' }}
+                        className={`absolute left-0 top-0 w-full h-full text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500 ${
+                          dynamicWords[dynamicWordIndex].word.includes(' ') ? 'text-left' : 'whitespace-nowrap'
+                        }`}
                       >
-                        {dynamicWords[dynamicWordIndex].word}
+                        {dynamicWords[dynamicWordIndex].word.includes(' ') ? (
+                          <span className="inline-block text-left">
+                            {dynamicWords[dynamicWordIndex].word.split(' ').map((w, idx) => (
+                              <span key={idx} className="block">{w}</span>
+                            ))}
+                          </span>
+                        ) : (
+                          dynamicWords[dynamicWordIndex].word
+                        )}
                       </motion.span>
                     </AnimatePresence>
                   </span>
                 </span>
               </h1>
 
+              {/* Responsive Elegant Subtitle */}
               <p className="relative z-10 text-lg md:text-xl text-[#475569] leading-relaxed max-w-2xl mb-10 font-normal">
                 Интерактивный инструмент для безопасного подбора, продажи и обмена квартир с использованием средств государственной поддержки. Без ложных обещаний, скрытых комиссий и навязанных услуг. Рассчитайте реальные параметры прямо сейчас.
               </p>
 
+              {/* Rapid trust icons + action buttons */}
+              <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
+                <button 
+                  onClick={scrollToCalculator}
+                  className="relative group px-8 py-4.5 rounded-2xl font-bold bg-slate-900 text-white shadow-xl shadow-slate-900/15 hover:bg-slate-800 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer"
+                >
+                  Рассчитать за 1 минуту
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
+                </button>
+
+                <button 
+                  onClick={() => {
+                    setCalcGoal('sell');
+                    setTimeout(scrollToCalculator, 100);
+                  }}
+                  className="relative overflow-hidden group px-8 py-4.5 rounded-2xl font-bold text-slate-900 bg-white/40 hover:bg-white/80 border border-slate-300/60 backdrop-blur-md shadow-xs active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  Хочу продать квартиру
+                </button>
+              </div>
+
+              {/* Genuine trust indicators */}
               <div className="relative z-10 mt-12 flex flex-wrap items-center gap-6 text-xs text-slate-500 font-semibold border-t border-slate-200/50 pt-8 w-full">
                 <div className="flex items-center gap-2">
                   <div className="p-1 rounded bg-emerald-100/60 text-emerald-700">
@@ -679,14 +794,17 @@ export default function LandingPage() {
 
             </div>
 
-            {/* Right Card */}
+            {/* Right Card: Apple-like Visual Accent Frame */}
             <div className="lg:col-span-5 relative w-full flex items-center justify-center">
+              
+              {/* Elegant floating gradient ornament */}
               <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-emerald-200/20 blur-2xl animate-pulse" />
               <div className="absolute -bottom-10 -left-10 w-44 h-44 rounded-full bg-cyan-200/20 blur-2xl animate-pulse" />
 
               <div className="relative w-full rounded-3xl border border-white/60 p-7 bg-white/45 backdrop-blur-2xl shadow-2xl shadow-slate-900/5 overflow-hidden">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-emerald-100/60 to-transparent rounded-bl-full pointer-events-none" />
                 
+                {/* Visual content: Key Program Overviews */}
                 <h3 className="font-extrabold text-slate-900 text-lg mb-5 flex items-center gap-2">
                   <BadgePercent className="w-5.2 h-5.2 text-emerald-500" />
                   Льготные программы 2026
@@ -756,11 +874,12 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* INTERACTIVE MORTGAGE & SUBSIDY CALCULATOR */}
+        {/* INTERACTIVE MORTGAGE & SUBSIDY CALCULATOR (The Conversion Engine) */}
         <section 
           className="scroll-mt-24 mb-24 md:mb-32"
           id="calculator"
         >
+          {/* Animated decorative heading */}
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
             <span className="text-xs font-extrabold tracking-widest text-[#64748B] uppercase">Интерактивный симулятор</span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight mt-2 mb-4">
@@ -773,10 +892,11 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             
-            {/* Left Inputs Controls */}
+            {/* Left Inputs Controls (Glass card) */}
             <div className="lg:col-span-7 rounded-3xl border border-white/70 bg-white/70 backdrop-blur-xl p-6 sm:p-8 shadow-xl flex flex-col justify-between">
               <div>
                 
+                {/* Goal selector tabs (Apple Style) */}
                 <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl mb-8">
                   <button 
                     onClick={() => setCalcGoal('buy')}
@@ -801,7 +921,10 @@ export default function LandingPage() {
                 </div>
 
                 {calcGoal === 'buy' ? (
+                  /* BUY FLOW CONTROLS */
                   <div className="space-y-6">
+                    
+                    {/* Cost slider */}
                     <div>
                       <div className="flex justify-between items-center mb-2">
                         <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Стоимость квартиры</label>
@@ -825,6 +948,7 @@ export default function LandingPage() {
                       </div>
                     </div>
 
+                    {/* Down payment slider */}
                     <div>
                       <div className="flex justify-between items-center mb-2">
                         <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Собственные средства (Первый взнос)</label>
@@ -847,7 +971,9 @@ export default function LandingPage() {
                       </div>
                     </div>
 
+                    {/* Subsidies checkboxes / Maternity Capital integrated beautifully */}
                     <div className="bg-slate-50/80 border border-slate-200/50 rounded-2xl p-5 space-y-4">
+                      
                       <div className="flex items-start gap-3">
                         <input 
                           type="checkbox" 
@@ -863,8 +989,10 @@ export default function LandingPage() {
                           </span>
                         </label>
                       </div>
+
                     </div>
 
+                    {/* Mortgage Rates Multi-Selector Toggle */}
                     <div>
                       <label className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-3">Выберите льготную программу банка</label>
                       <div className="grid grid-cols-2 gap-3">
@@ -892,7 +1020,9 @@ export default function LandingPage() {
 
                   </div>
                 ) : (
+                  /* SELL FLOW CONTROLS */
                   <div className="space-y-6">
+                    
                     <div className="bg-amber-50/50 border border-amber-200/50 rounded-2xl p-4 flex gap-3 text-amber-900">
                       <TrendingDown className="w-5 h-5 shrink-0 text-amber-600 mt-0.5" />
                       <div>
@@ -949,6 +1079,7 @@ export default function LandingPage() {
                     </div>
 
                     <div className="bg-slate-50 border border-slate-200/50 rounded-2xl p-5 space-y-4">
+                      
                       <div className="flex items-start gap-3">
                         <input 
                           type="checkbox" 
@@ -964,6 +1095,7 @@ export default function LandingPage() {
                           </span>
                         </label>
                       </div>
+
                     </div>
 
                   </div>
@@ -971,6 +1103,7 @@ export default function LandingPage() {
 
               </div>
 
+              {/* Security info stamp */}
               <div className="mt-8 pt-6 border-t border-slate-200/60 flex items-center gap-2.5 text-[11.5px] text-[#617281] font-semibold">
                 <ShieldCheck className="w-4.5 h-4.5 text-emerald-600 shrink-0" />
                 Расчет является предварительным планированием сделки с учетом банковских регламентов РФ 2026 г.
@@ -978,8 +1111,9 @@ export default function LandingPage() {
 
             </div>
 
-            {/* Right Form Summary & Capture Screen */}
+            {/* Right Form Summary & Capture Screen (Luxury glass interactive output) */}
             <div className="lg:col-span-5 rounded-3xl border border-white/70 bg-[#1C2330] text-white p-6 sm:p-8 shadow-2xl flex flex-col justify-between relative overflow-hidden">
+              {/* background light glow effects inside darkness */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -992,7 +1126,9 @@ export default function LandingPage() {
                 </div>
 
                 {calcGoal === 'buy' ? (
+                  /* CALCULATED RATES BUY RESULT */
                   <div className="space-y-6">
+                    
                     <div>
                       <div className="text-xs font-bold uppercase tracking-wider text-[#94A3B8] mb-1">Сумма кредита</div>
                       <div className="text-2xl sm:text-3xl font-black tracking-tight text-white">
@@ -1030,17 +1166,19 @@ export default function LandingPage() {
                         <span className="text-base font-bold text-[#94A3B8]">₽/мес</span>
                       </div>
                       <p className="text-[10px] text-emerald-400/90 flex items-center gap-1 mt-2.5 font-semibold">
-                        <Check className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
+                        <Check className="w-3.5 h-3.5 shrink-0 animate-pulse text-emerald-400" />
                         Планируемый регулярный ежемесячный взнос за ипотеку.
                       </p>
                     </div>
 
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  /* CALCULATED RATES SELL RESULT */
+                  <div className="space-y-6 animate-fadeIn">
+                    
                     <div>
                       <div className="text-xs font-bold uppercase tracking-wider text-[#94A3B8] mb-1">Оценочная стоимость вашей квартиры</div>
-                      <div className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                      <div className="text-2xl sm:text-3xl font-black tracking-tight text-white font-mono">
                         {propertyValue.toLocaleString('ru-RU')} ₽
                       </div>
                       <div className="text-xs text-indigo-300 mt-1 font-semibold flex items-center gap-1">
@@ -1052,7 +1190,7 @@ export default function LandingPage() {
                       <div>
                         <div className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8] mb-0.5">Ориентир. срок продажи</div>
                         <div className="text-lg font-black text-emerald-400">
-                          {quizUrgency === 'Срочно (2-3 недели)' ? '14-20 дней' : '30-45 дней'}
+                          {quizSellUrgency === 'Нужно продать срочно (готовы к торгу)' ? '14-20 дней' : '30-45 дней'}
                         </div>
                       </div>
                       <div>
@@ -1065,7 +1203,7 @@ export default function LandingPage() {
 
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-5 mt-4">
                       <div className="text-xs text-[#94A3B8] font-bold uppercase tracking-wider mb-1">Прогнозируемый чистый доход от сделки</div>
-                      <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight flex items-baseline gap-1.5">
+                      <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight flex items-baseline gap-1.5 font-sans">
                         {(propertyValue - Math.max(150000, Math.round(propertyValue * 0.02))).toLocaleString('ru-RU')}
                         <span className="text-base font-bold text-[#94A3B8]">₽</span>
                       </div>
@@ -1091,6 +1229,7 @@ export default function LandingPage() {
                       onSubmit={handleLeadSubmit}
                       className="space-y-4"
                     >
+                      {/* Step indicator system */}
                       <div className="flex items-center justify-between gap-1 mb-5">
                         {[1, 2, 3].map((step) => {
                           const isCompleted = step < quizStep;
@@ -1181,120 +1320,481 @@ export default function LandingPage() {
                           className="space-y-4 text-left font-sans"
                         >
                           <h4 className="text-sm font-black text-white tracking-wide uppercase mb-1">
-                            Шаг 2: Условия и город
+                            Шаг 2: {calcGoal === 'buy' ? 'Параметры покупки' : 'Параметры продажи'}
                           </h4>
-                          
-                          <div className="space-y-2">
-                            <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Выберите город:</span>
-                            <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
-                              {['Москва', 'СПб', 'Казань', 'Новосибирск', 'Другой'].map((city) => {
-                                const isSel = quizLocationType === city;
-                                return (
-                                  <button
-                                    key={city}
-                                    type="button"
-                                    onClick={() => setQuizLocationType(city)}
-                                    className={`py-2 rounded-xl text-[10px] font-extrabold text-center cursor-pointer transition-all border ${
-                                      isSel 
-                                        ? 'bg-emerald-500 border-emerald-500 text-slate-950' 
-                                        : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
-                                    }`}
-                                  >
-                                    {city}
-                                  </button>
-                                );
-                              })}
+
+                          <div className="space-y-4 max-h-[420px] overflow-y-auto pr-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+                            
+                            {/* Q0: City Selection (High-End Swiss Interface) */}
+                            <div className="space-y-2 bg-white/5 border border-white/10 p-3.5 rounded-2xl">
+                              <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Выберите город сделки:</span>
+                              <div className="grid grid-cols-4 gap-1.5">
+                                {['Уфа', 'Москва', 'СПб', 'Другое'].map((city) => {
+                                  const mappedCity = city === 'СПб' ? 'Санкт-Петербург' : city === 'Другое' ? 'Другой' : city;
+                                  const isSel = quizCity === mappedCity;
+                                  return (
+                                    <button
+                                      key={city}
+                                      type="button"
+                                      onClick={() => setQuizCity(mappedCity)}
+                                      className={`py-2 rounded-xl text-[10px] font-extrabold text-center cursor-pointer transition-all duration-300 border ${
+                                        isSel 
+                                          ? 'bg-emerald-500 border-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/15' 
+                                          : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/25'
+                                      }`}
+                                    >
+                                      {city}
+                                    </button>
+                                  );
+                                })}
+                              </div>
                             </div>
+
+                            {/* Sync Callout Accent Banner */}
+                            <div className="bg-emerald-500/10 border border-emerald-500/15 rounded-2xl p-3.5 flex gap-3 text-left">
+                              <div className="bg-emerald-500/20 text-emerald-400 p-2 rounded-xl h-fit shrink-0">
+                                <Sliders className="w-3.5 h-3.5" />
+                              </div>
+                              <div>
+                                <span className="block text-[10px] font-black text-emerald-400 uppercase tracking-widest leading-none">Двусторонняя синхронизация</span>
+                                <span className="block text-[9.5px] text-slate-300 leading-relaxed mt-1 font-semibold">
+                                  Вы можете тонко оценить стоимость и первый взнос прямо ползунками ниже или в блоке слева. Значения мгновенно обновляются на обеих панелях!
+                                </span>
+                              </div>
+                            </div>
+
+                            {calcGoal === 'buy' ? (
+                              /* BLOCK 1: BUYING FLOW */
+                              <div className="space-y-4">
+                                
+                                {/* Quiz embedded Sliders */}
+                                <div className="space-y-3.5 bg-emerald-500/5 border border-emerald-500/10 p-3.5 rounded-2xl">
+                                  {/* Slider 1: Budget */}
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-[10px] uppercase font-black text-slate-300 tracking-wider">Желаемый бюджет покупки:</span>
+                                      <span className="text-[11.5px] font-black text-emerald-400 font-mono">
+                                        {propertyValue.toLocaleString('ru-RU')} ₽
+                                      </span>
+                                    </div>
+                                    <input 
+                                      type="range" 
+                                      min="2500000" 
+                                      max="30000000" 
+                                      step="100000"
+                                      value={propertyValue}
+                                      onChange={(e) => handlePropertyValueChange(Number(e.target.value))}
+                                      className="w-full h-1 accent-emerald-500 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                                    />
+                                    <div className="flex justify-between text-[8px] text-slate-400 font-bold">
+                                      <span>2.5 млн</span>
+                                      <span>15 млн</span>
+                                      <span>30 млн ₽</span>
+                                    </div>
+                                  </div>
+
+                                  {/* Slider 2: Downpayment if not cash */}
+                                  {quizPaymentMethod !== '100% наличный расчет' && (
+                                    <div className="space-y-1.5 pt-1">
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-[10px] uppercase font-black text-slate-300 tracking-wider">Ваш первоначальный взнос:</span>
+                                        <span className="text-[11.5px] font-black text-emerald-400 font-mono">
+                                          {downPayment.toLocaleString('ru-RU')} ₽
+                                        </span>
+                                      </div>
+                                      <input 
+                                        type="range" 
+                                        min="500000" 
+                                        max={propertyValue} 
+                                        step="50000"
+                                        value={downPayment}
+                                        onChange={(e) => handleDownPaymentChange(Number(e.target.value))}
+                                        className="w-full h-1 accent-emerald-500 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                                      />
+                                      <div className="flex justify-between text-[8px] text-slate-400 font-bold">
+                                        <span>500 тыс.</span>
+                                        <span>макс. {propertyValue.toLocaleString('ru-RU')}</span>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Q1: Type of Property customized by City */}
+                                <div className="space-y-2">
+                                  <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Какую недвижимость вы ищете?</span>
+                                  <div className="flex flex-col gap-1.5">
+                                    {[
+                                      `Новостройка${quizCity === 'Другой' ? '' : ` в ${quizCity === 'Санкт-Петербург' ? 'СПб' : quizCity}`} (хочу квартиру в строящемся или сданном ЖК)`,
+                                      `Вторичное жилье${quizCity === 'Другой' ? '' : ` в ${quizCity === 'Санкт-Петербург' ? 'СПб' : quizCity}`} (готовое с ремонтом или под ремонт)`,
+                                      `Загородный дом / Земельный участок ${quizCity === 'Уфа' ? 'под Уфой' : quizCity === 'Москва' ? 'в Подмосковье' : quizCity === 'Санкт-Петербург' ? 'в Ленобласти' : 'в пригороде'}`,
+                                      'Пока не определился'
+                                    ].map((type) => {
+                                      const isSel = quizBuyPropertyType === type;
+                                      return (
+                                        <button
+                                          key={type}
+                                          type="button"
+                                          onClick={() => setQuizBuyPropertyType(type)}
+                                          className={`py-2 px-3 rounded-xl text-[10px] font-bold text-left cursor-pointer transition-all border leading-tight ${
+                                            isSel 
+                                              ? 'bg-emerald-500 border-emerald-500 text-slate-950 shadow-md shadow-emerald-500/10' 
+                                              : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                          }`}
+                                        >
+                                          {type}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+
+                                {/* Q2: Rooms */}
+                                <div className="space-y-2">
+                                  <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Сколько комнат вам необходимо?</span>
+                                  <div className="grid grid-cols-2 gap-1.5">
+                                    {[
+                                      'Студия / 1-комнатная',
+                                      '2-комнатная',
+                                      '3-комнатная и более',
+                                      'Свободная планировка'
+                                    ].map((room) => {
+                                      const isSel = quizRooms === room;
+                                      return (
+                                        <button
+                                          key={room}
+                                          type="button"
+                                          onClick={() => setQuizRooms(room)}
+                                          className={`py-2 px-2 rounded-xl text-[10px] font-bold text-center cursor-pointer transition-all border leading-tight ${
+                                            isSel 
+                                              ? 'bg-emerald-500 border-emerald-500 text-slate-950' 
+                                              : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                          }`}
+                                        >
+                                          {room}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+
+                                {/* Q3: Payment Method */}
+                                <div className="space-y-2">
+                                  <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Какой способ оплаты вы рассматриваете?</span>
+                                  <div className="flex flex-col gap-1.5">
+                                    {[
+                                      'Ипотека (обычная)',
+                                      'Семейная ипотека / Льготная программа',
+                                      'Материнский капитал + ипотека или наличные',
+                                      '100% наличный расчет',
+                                      'Военная ипотека / Сертификаты'
+                                    ].map((method) => {
+                                      const isSel = quizPaymentMethod === method;
+                                      return (
+                                        <button
+                                          key={method}
+                                          type="button"
+                                          onClick={() => setQuizPaymentMethod(method)}
+                                          className={`py-2 px-3 rounded-xl text-[10px] font-bold text-left cursor-pointer transition-all border leading-tight ${
+                                            isSel 
+                                              ? 'bg-emerald-500 border-emerald-500 text-slate-950' 
+                                              : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                          }`}
+                                        >
+                                          {method}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+
+                                {/* Q4: Down Payment Selection */}
+                                {quizPaymentMethod !== '100% наличный расчет' && (
+                                  <motion.div 
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    className="space-y-2"
+                                  >
+                                    <span className="block text-[10px] uppercase font-black text-emerald-400 tracking-wider">Планируемый диапазон первого взноса:</span>
+                                    <div className="grid grid-cols-2 gap-1.5">
+                                      {[
+                                        'Нет первоначального взноса (ищу варианты без него)',
+                                        'До 500 000 руб.',
+                                        'От 500 000 до 1 500 000 руб.',
+                                        'Более 1 500 005 (настроено ползунком)'
+                                      ].map((dp) => {
+                                        const isSel = quizDownPayment === dp;
+                                        return (
+                                          <button
+                                            key={dp}
+                                            type="button"
+                                            onClick={() => setQuizDownPayment(dp)}
+                                            className={`py-2 px-2 rounded-xl text-[10px] font-bold text-center cursor-pointer transition-all border leading-tight ${
+                                              isSel 
+                                                ? 'bg-emerald-500 border-emerald-500 text-slate-950' 
+                                                : 'bg-white/5 border-white/10 text-slate-350 hover:bg-white/10'
+                                            }`}
+                                          >
+                                            {dp}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  </motion.div>
+                                )}
+
+                                {/* Q5: Readiness */}
+                                <div className="space-y-2">
+                                  <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Когда вы готовы выйти на сделку?</span>
+                                  <div className="flex flex-col gap-1.5">
+                                    {[
+                                      'Прямо сейчас (деньги на руках / ипотека одобрена)',
+                                      'В течение 1–2 месяцев',
+                                      'Просто прицениваюсь, планирую в течение полугода'
+                                    ].map((item) => {
+                                      const isSel = quizReadiness === item;
+                                      return (
+                                        <button
+                                          key={item}
+                                          type="button"
+                                          onClick={() => setQuizReadiness(item)}
+                                          className={`py-2 px-3 rounded-xl text-[10px] font-bold text-left cursor-pointer transition-all border leading-tight ${
+                                            isSel 
+                                              ? 'bg-emerald-500 border-emerald-500 text-slate-950' 
+                                              : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                          }`}
+                                        >
+                                          {item}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              /* BLOCK 2: SELLING FLOW */
+                              <div className="space-y-4">
+
+                                {/* Quiz embedded Sliders */}
+                                <div className="space-y-3.5 bg-emerald-500/5 border border-emerald-500/10 p-3.5 rounded-2xl">
+                                  {/* Slider 1: Estimated price */}
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-[10px] uppercase font-black text-slate-300 tracking-wider">Оценочная стоимость вашей квартиры:</span>
+                                      <span className="text-[11.5px] font-black text-emerald-400 font-mono">
+                                        {propertyValue.toLocaleString('ru-RU')} ₽
+                                      </span>
+                                    </div>
+                                    <input 
+                                      type="range" 
+                                      min="2000000" 
+                                      max="35000000" 
+                                      step="100000"
+                                      value={propertyValue}
+                                      onChange={(e) => handlePropertyValueChange(Number(e.target.value))}
+                                      className="w-full h-1 accent-emerald-500 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                                    />
+                                    <div className="flex justify-between text-[8px] text-slate-400 font-bold">
+                                      <span>2 млн</span>
+                                      <span>18.5 млн</span>
+                                      <span>35 млн ₽</span>
+                                    </div>
+                                  </div>
+
+                                  {/* Slider 2: Debt */}
+                                  <div className="space-y-1.5 pt-1">
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-[10px] uppercase font-black text-slate-300 tracking-wider">Остаток долга по ипотеке:</span>
+                                      <span className="text-[11.5px] font-black text-emerald-400 font-mono">
+                                        {downPayment.toLocaleString('ru-RU')} ₽
+                                      </span>
+                                    </div>
+                                    <input 
+                                      type="range" 
+                                      min="0" 
+                                      max={propertyValue} 
+                                      step="50000"
+                                      value={downPayment}
+                                      onChange={(e) => handleDownPaymentChange(Number(e.target.value))}
+                                      className="w-full h-1 accent-emerald-500 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                                    />
+                                    <div className="flex justify-between text-[8px] text-slate-400 font-bold">
+                                      <span>0 ₽ (Нет долга)</span>
+                                      <span>макс. {propertyValue.toLocaleString('ru-RU')}</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Q1: Sell Property Type customized by City */}
+                                <div className="space-y-2">
+                                  <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Какой объект вы хотите продать?</span>
+                                  <div className="flex flex-col gap-1.5">
+                                    {[
+                                      `Квартира (вторичка)${quizCity === 'Другой' ? '' : ` в ${quizCity === 'Санкт-Петербург' ? 'СПб' : quizCity}`}`,
+                                      `Комната / Доля${quizCity === 'Другой' ? '' : ` в ${quizCity === 'Санкт-Петербург' ? 'СПб' : quizCity}`}`,
+                                      'Дом / Коттедж / Таунхаус в пригороде',
+                                      'Земельный участок / Коммерческая недвижимость'
+                                    ].map((type) => {
+                                      const isSel = quizSellPropertyType === type;
+                                      return (
+                                        <button
+                                          key={type}
+                                          type="button"
+                                          onClick={() => setQuizSellPropertyType(type)}
+                                          className={`py-2 px-3 rounded-xl text-[10px] font-bold text-left cursor-pointer transition-all border leading-tight ${
+                                            isSel 
+                                              ? 'bg-emerald-500 border-emerald-500 text-slate-950 shadow-md shadow-emerald-500/10' 
+                                              : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                          }`}
+                                        >
+                                          {type}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+
+                                {/* Q2: Sell Rooms & Location dynamic based on city */}
+                                <div className="space-y-2.5">
+                                  <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Количество комнат в объекте:</span>
+                                  <div className="grid grid-cols-5 gap-1.5">
+                                    {['Студия', '1', '2', '3', '4+'].map((room) => {
+                                      const isSel = quizSellRooms === room;
+                                      return (
+                                        <button
+                                          key={room}
+                                          type="button"
+                                          onClick={() => setQuizSellRooms(room)}
+                                          className={`py-2 rounded-xl text-[10px] font-extrabold text-center cursor-pointer transition-all border ${
+                                            isSel 
+                                              ? 'bg-emerald-500 border-emerald-500 text-slate-950 shadow-md' 
+                                              : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                          }`}
+                                        >
+                                          {room}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+
+                                  <div className="space-y-1 mt-1.5">
+                                    <label className="block text-[9px] uppercase font-black text-emerald-400/90 tracking-wider">
+                                      Район или улица в {quizCity === 'Другой' ? 'вашем городе' : quizCity === 'Санкт-Петербург' ? 'Санкт-Петербурге' : quizCity === 'Москва' ? 'Москве' : 'Уфе'}:
+                                    </label>
+                                    <input 
+                                      type="text"
+                                      value={quizSellLocation}
+                                      onChange={(e) => setQuizSellLocation(e.target.value)}
+                                      placeholder={
+                                        quizCity === 'Уфа' 
+                                          ? 'Например, Зеленая Роща, ул. Менделеева' 
+                                          : quizCity === 'Москва' 
+                                          ? 'Например, Хамовники, Пречистенка' 
+                                          : quizCity === 'Санкт-Петербург' 
+                                          ? 'Например, Приморский р-н, Невский проспект' 
+                                          : 'Укажите улицу, район, микрорайон'
+                                      }
+                                      className="w-full bg-white/5 border border-white/10 focus:border-emerald-500/80 focus:ring-1 focus:ring-emerald-500/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-hidden transition-all"
+                                      required
+                                    />
+                                  </div>
+                                </div>
+
+                                {/* Q3: Condition */}
+                                <div className="space-y-2">
+                                  <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">В каком состоянии находится объект?</span>
+                                  <div className="flex flex-col gap-1.5">
+                                    {[
+                                      'Хороший ремонт (можно заехать и жить)',
+                                      'Требуется косметический ремонт',
+                                      'Черновая отделка / Требуется капитальный ремонт'
+                                    ].map((cond) => {
+                                      const isSel = quizSellCondition === cond;
+                                      return (
+                                        <button
+                                          key={cond}
+                                          type="button"
+                                          onClick={() => setQuizSellCondition(cond)}
+                                          className={`py-2 px-3 rounded-xl text-[10px] font-bold text-left cursor-pointer transition-all border leading-tight ${
+                                            isSel 
+                                              ? 'bg-emerald-500 border-emerald-500 text-slate-950' 
+                                              : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                          }`}
+                                        >
+                                          {cond}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+
+                                {/* Q4: Obstacles */}
+                                <div className="space-y-2">
+                                  <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Есть ли какие-то обременения или нюансы?</span>
+                                  <div className="flex flex-col gap-1.5">
+                                    {[
+                                      'Нет, квартира чистая, собственник один',
+                                      'Квартира в ипотеке (не погашен кредит)',
+                                      'Использовался материнский капитал (есть детские доли)',
+                                      'Среди собственников есть несовершеннолетние'
+                                    ].map((obstacle) => {
+                                      const isSel = quizSellObstacles === obstacle;
+                                      return (
+                                        <button
+                                          key={obstacle}
+                                          type="button"
+                                          onClick={() => setQuizSellObstacles(obstacle)}
+                                          className={`py-2 px-3 rounded-xl text-[10px] font-bold text-left cursor-pointer transition-all border leading-tight ${
+                                            isSel 
+                                              ? 'bg-emerald-500 border-emerald-500 text-slate-950' 
+                                              : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                          }`}
+                                        >
+                                          {obstacle}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+
+                                {/* Q5: Urgency */}
+                                <div className="space-y-2">
+                                  <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Какова причина и срочность продажи?</span>
+                                  <div className="flex flex-col gap-1.5">
+                                    {[
+                                      'Нужно продать срочно (готовы к торгу)',
+                                      'Альтернативная сделка (продаем эту, чтобы сразу купить другую)',
+                                      'Не спешим, хотим продать по максимальной цене'
+                                    ].map((item) => {
+                                      const isSel = quizSellUrgency === item;
+                                      return (
+                                        <button
+                                          key={item}
+                                          type="button"
+                                          onClick={() => {
+                                            setQuizSellUrgency(item);
+                                          }}
+                                          className={`py-2 px-3 rounded-xl text-[10px] font-bold text-left cursor-pointer transition-all border leading-tight ${
+                                            isSel 
+                                              ? 'bg-emerald-500 border-emerald-500 text-slate-950' 
+                                              : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                          }`}
+                                        >
+                                          {item}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
                           </div>
 
-                          <div className="space-y-2">
-                            <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Какая льгота у вас есть или планируется?</span>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                              {[
-                                { id: 'Семейная', name: 'Семейная до 6%' },
-                                { id: 'IT', name: 'IT-ипотека 5%' },
-                                { id: 'Маткапитал', name: 'Маткапитал' },
-                                { id: 'Другая', name: 'Другая льгота' },
-                                { id: 'Нет', name: 'Нет льгот' }
-                              ].map((benefit) => {
-                                const isSel = quizCondition === benefit.id;
-                                return (
-                                  <button
-                                    key={benefit.id}
-                                    type="button"
-                                    onClick={() => setQuizCondition(benefit.id)}
-                                    className={`py-2 px-1 rounded-xl text-[10px] font-bold text-center cursor-pointer transition-all border ${
-                                      isSel 
-                                        ? 'bg-emerald-500 border-emerald-500 text-slate-950' 
-                                        : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
-                                    }`}
-                                  >
-                                    {benefit.name}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-
-                          <div className="space-y-2">
-                            <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Количество комнат:</span>
-                            <div className="grid grid-cols-5 gap-1.5">
-                              {['Студия', '1-комн', '2-комн', '3-комн', '4-комн+'].map((room) => {
-                                const isSel = quizRooms === room;
-                                return (
-                                  <button
-                                    key={room}
-                                    type="button"
-                                    onClick={() => setQuizRooms(room)}
-                                    className={`py-2 rounded-xl text-[10px] font-extrabold text-center cursor-pointer transition-all select-none border ${
-                                      isSel 
-                                        ? 'bg-emerald-500 border-emerald-500 text-slate-950' 
-                                        : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
-                                    }`}
-                                  >
-                                    {room}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-
-                          <div className="space-y-2">
-                            <span className="block text-[10px] uppercase font-black text-slate-300 tracking-wider">Сроки планируемой сделки:</span>
-                            <div className="grid grid-cols-2 gap-1.5">
-                              {[
-                                { id: 'urgent', name: 'Срочно (в течение месяца)' },
-                                { id: 'medium', name: 'В течение 1-3 месяцев' },
-                                { id: 'planning', name: 'В течение 3-6 месяцев' },
-                                { id: 'watching', name: 'Просто прицениваюсь' }
-                              ].map((item) => {
-                                const isSel = quizReadiness === item.name;
-                                return (
-                                  <button
-                                    key={item.id}
-                                    type="button"
-                                    onClick={() => {
-                                      setQuizReadiness(item.name);
-                                      setQuizUrgency(item.name);
-                                    }}
-                                    className={`py-2.5 px-2 rounded-xl text-[10px] font-bold text-center cursor-pointer transition-all border leading-tight ${
-                                      isSel 
-                                        ? 'bg-emerald-500 border-emerald-500 text-slate-950 px-1' 
-                                        : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
-                                    }`}
-                                  >
-                                    {item.name}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-
+                          {/* Movement Buttons */}
                           <div className="grid grid-cols-3 gap-2 pt-4">
                             <button
                               type="button"
                               onClick={() => setQuizStep(1)}
-                              className="col-span-1 bg-white/10 hover:bg-white/15 text-white py-3 rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer border-0 transition-all text-center"
+                              className="col-span-1 bg-white/10 hover:bg-white/15 text-white py-3 rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer border-0 transition-all text-center animate-fadeIn"
                             >
                               Назад
                             </button>
@@ -1323,6 +1823,7 @@ export default function LandingPage() {
                             Шаг 3: Ваши контактные данные
                           </h4>
 
+                          {/* Full Name input */}
                           <div className="space-y-1.5">
                             <label className="block text-[10px] uppercase font-black text-slate-350 tracking-wider">Ваше имя:</label>
                             <input 
@@ -1335,6 +1836,7 @@ export default function LandingPage() {
                             />
                           </div>
 
+                          {/* Phone input */}
                           <div className="space-y-1.5">
                             <label className="block text-[10px] uppercase font-black text-slate-350 tracking-wider">Номер телефона для связи:</label>
                             <input 
@@ -1347,6 +1849,7 @@ export default function LandingPage() {
                             />
                           </div>
 
+                          {/* Preffered messenger choice */}
                           <div className="space-y-2">
                             <span className="block text-[10px] uppercase font-black text-slate-350 tracking-wider">Где удобнее получить расчет?</span>
                             <div className="grid grid-cols-3 gap-1.5">
@@ -1372,6 +1875,7 @@ export default function LandingPage() {
                             </div>
                           </div>
 
+                          {/* Conditional Telegram Username input */}
                           {quizContactMethod === 'Telegram' && (
                             <motion.div 
                               initial={{ opacity: 0, y: -10 }}
@@ -1390,6 +1894,7 @@ export default function LandingPage() {
                             </motion.div>
                           )}
 
+                          {/* Submission Buttons */}
                           <div className="grid grid-cols-3 gap-2 pt-4">
                             <button
                               type="button"
@@ -1437,7 +1942,7 @@ export default function LandingPage() {
                       <div>
                         <h4 className="text-base font-black text-white">Вы идеально прошли тест!</h4>
                         <p className="text-xs text-slate-400 mt-2 leading-normal px-2">
-                          Все 10+ параметров вашего запроса зафиксированы in CRM. Персональная девелоперская и банковская подборка выслана на указанный <span className="text-white font-black">{quizContactMethod}</span> по номеру <span className="text-white font-bold">{phoneNumber}</span>.
+                          Все 10+ параметров вашего запроса зафиксированы в CRM. Персональная девелоперская и банковская подборка выслана на указанный <span className="text-white font-black">{quizContactMethod}</span> по номеру <span className="text-white font-bold">{phoneNumber}</span>.
                         </p>
                       </div>
                       <button
@@ -1464,6 +1969,7 @@ export default function LandingPage() {
 
         {/* PREMIUM RESIDENCES CAROUSEL SECTION */}
         <section id="complexes-carousel" className="py-24 bg-slate-100/75 border-y border-slate-200/50 relative overflow-hidden">
+          {/* Animated Ambient Accents */}
           <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
             <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[350px] h-[350px] bg-emerald-100/30 rounded-full blur-3xl" />
             <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[300px] h-[300px] bg-sky-100/30 rounded-full blur-3xl" />
@@ -1471,6 +1977,7 @@ export default function LandingPage() {
 
           <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-12">
             
+            {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
               <div className="max-w-2xl text-left">
                 <span className="text-[11px] font-black tracking-widest text-[#64748B] uppercase bg-white border border-slate-200/80 px-3 py-1.5 rounded-full inline-block mb-3">
@@ -1480,26 +1987,28 @@ export default function LandingPage() {
                   Ставки от 4.8% в лучших новостройках
                 </h2>
                 <p className="text-slate-600 text-sm font-medium mt-2 leading-relaxed">
-                  Мы отобрали премиальные жилые комплексы с maximal выгодой субсидирования. Нажмите на карточку, чтобы перейти на сайт объекта, или «Подробнее» для разбора цен.
+                  Мы отобрали премиальные жилые комплексы с максимальной выгодой субсидирования. Нажмите на карточку, чтобы перейти на сайт объекта, или «Подробнее» для разбора цен.
                 </p>
               </div>
 
+              {/* Navigation Controls */}
               <div className="flex items-center gap-2 mt-4 md:mt-0">
                 <button 
                   onClick={handlePrev}
-                  className="w-11 h-11 rounded-full bg-white shadow-xs hover:bg-slate-50 transition-all flex items-center justify-center cursor-pointer text-slate-800 hover:text-slate-950 active:scale-95 border-0"
+                  className="w-11 h-11 rounded-full border border-slate-250 bg-white shadow-xs hover:bg-slate-50 transition-all flex items-center justify-center cursor-pointer text-slate-800 hover:text-slate-950 active:scale-95 border-0"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button 
                   onClick={handleNext}
-                  className="w-11 h-11 rounded-full bg-white shadow-xs hover:bg-slate-50 transition-all flex items-center justify-center cursor-pointer text-slate-800 hover:text-slate-950 active:scale-95 border-0"
+                  className="w-11 h-11 rounded-full border border-slate-250 bg-white shadow-xs hover:bg-slate-50 transition-all flex items-center justify-center cursor-pointer text-slate-800 hover:text-slate-950 active:scale-95 border-0"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
+            {/* Slider Container with Viewport */}
             <div 
               className="relative overflow-hidden -ml-6 sm:-ml-12 pl-6 sm:pl-12 w-[calc(100%+1.5rem)] sm:w-[calc(100%+3rem)]"
               onMouseEnter={() => setIsCarouselHovered(true)}
@@ -1524,6 +2033,7 @@ export default function LandingPage() {
                       }}
                       className="relative bg-white border border-slate-200/60 rounded-2xl md:rounded-3xl shadow-sm hover:shadow-xl hover:border-slate-300 transition-all flex flex-col justify-between overflow-hidden p-4 select-none h-[410px] md:h-[440px] w-[calc(50%-8px)] md:w-[calc(33.333%-16px)] flex-shrink-0 group"
                     >
+                      {/* Photo Area */}
                       <div className="h-[180px] md:h-[210px] w-full relative overflow-hidden rounded-xl md:rounded-2xl bg-slate-100">
                         <img 
                           src={item.imgUrl} 
@@ -1531,13 +2041,16 @@ export default function LandingPage() {
                           referrerPolicy="no-referrer"
                           className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-700 pointer-events-none"
                         />
+                        {/* Dark fade-in gradient */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
                         
+                        {/* Status Badge */}
                         <span className="absolute top-3 left-3 bg-slate-900/90 backdrop-blur-md text-white text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-md border border-white/10">
                           {item.completion}
                         </span>
                       </div>
 
+                      {/* Info Area */}
                       <div className="flex-1 flex flex-col pt-3 text-left">
                         <span className="text-[9px] font-black tracking-widest text-[#64748B] uppercase">
                           {item.developer}
@@ -1552,6 +2065,7 @@ export default function LandingPage() {
                           <span>{item.address}</span>
                         </p>
 
+                        {/* Prices Preview */}
                         <div className="grid grid-cols-2 gap-x-3 gap-y-1 py-2 my-2 border-t border-slate-100">
                           {item.prices.slice(0, 2).map((priceItem, pIdx) => (
                             <div key={pIdx} className="flex flex-col">
@@ -1566,6 +2080,7 @@ export default function LandingPage() {
                           )}
                         </div>
 
+                        {/* Details Toggle Button */}
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
@@ -1583,6 +2098,7 @@ export default function LandingPage() {
               </motion.div>
             </div>
 
+            {/* Pagination Bullet Indicators */}
             <div className="flex justify-center items-center gap-1.5 mt-8">
               {COMPLEXES.map((_, idx) => {
                 const maxSlide = isMobile ? COMPLEXES.length - 2 : COMPLEXES.length - 3;
@@ -1602,6 +2118,7 @@ export default function LandingPage() {
               })}
             </div>
 
+            {/* Bottom Slogan Statement */}
             <div className="mt-10 max-w-xl mx-auto text-center">
               <p className="text-xs text-slate-600 font-extrabold tracking-wide uppercase leading-normal">
                 💥 Это лишь <span className="text-emerald-600 underline decoration-2 underline-offset-2">0.1% от всех</span> наших реальных предложений!
@@ -1632,6 +2149,7 @@ export default function LandingPage() {
                 className="bg-white rounded-3xl overflow-hidden max-w-md w-full shadow-2xl border border-slate-200/80 flex flex-col relative"
                 onClick={(e) => e.stopPropagation()}
               >
+                {/* Header Image Area */}
                 <div className="h-[200px] w-full relative">
                   <img 
                     src={selectedComplex.imgUrl} 
@@ -1641,6 +2159,7 @@ export default function LandingPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 to-transparent" />
                   
+                  {/* Floating Close Button */}
                   <button 
                     onClick={() => setSelectedComplex(null)}
                     className="absolute top-4 right-4 w-9 h-9 bg-black/60 hover:bg-black/80 backdrop-blur-md text-white rounded-full flex items-center justify-center cursor-pointer transition-colors border-0"
@@ -1658,8 +2177,10 @@ export default function LandingPage() {
                   </div>
                 </div>
 
+                {/* Body Content Area */}
                 <div className="p-5 text-left flex-1 overflow-y-auto max-h-[60vh] space-y-4">
                   
+                  {/* Address element */}
                   <div className="space-y-1">
                     <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Адрес объекта:</span>
                     <p className="text-xs text-slate-600 font-bold flex items-start gap-1.5 leading-relaxed">
@@ -1668,6 +2189,7 @@ export default function LandingPage() {
                     </p>
                   </div>
 
+                  {/* Date and General Specs */}
                   <div className="grid grid-cols-2 gap-3 bg-slate-50 border border-slate-100 p-3.5 rounded-2xl text-xs">
                     <div>
                       <span className="block text-[8px] font-black text-slate-400 uppercase tracking-wider">Срок сдачи:</span>
@@ -1679,6 +2201,7 @@ export default function LandingPage() {
                     </div>
                   </div>
 
+                  {/* Plan / Price Rows */}
                   <div className="space-y-2 pt-1">
                     <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Доступные планировки:</span>
                     <div className="space-y-1.5">
@@ -1699,6 +2222,7 @@ export default function LandingPage() {
                     </div>
                   </div>
 
+                  {/* Buttons Grid */}
                   <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100">
                     <button 
                       onClick={() => {
@@ -1711,8 +2235,7 @@ export default function LandingPage() {
 
                     <button 
                       onClick={() => {
-                        // ИСПРАВЛЕНО: Добавлен знак $ для корректной интерполяции строки mapUrl
-                        const mapUrl = `https://maps.google.com/?q=${encodeURIComponent(selectedComplex.name + ' ' + selectedComplex.address)}`;
+                        const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedComplex.name + ' ' + selectedComplex.address)}`;
                         window.open(mapUrl, '_blank');
                       }}
                       className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 px-2 rounded-xl text-[10px] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-1 border-0 shadow-xs active:scale-95 text-center"
@@ -1727,10 +2250,12 @@ export default function LandingPage() {
           )}
         </AnimatePresence>
 
-        {/* STEP BY STEP TIMELINE */}
-        <section id="how" className="relative w-full h-[350vh]">
-          <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9]/85 to-[#F8FAFC] text-slate-900 border-y border-slate-200/50 md:rounded-3xl shadow-2xl">
+        {/* STEP BY STEP TIMELINE (SCROLL-DRIVEN STACKED CARDS) */}
+        <section id="how" className="relative w-full lg:h-[350vh]">
+          {/* Sticky view holder */}
+          <div className="lg:sticky lg:top-0 lg:h-screen w-full flex items-center justify-center lg:overflow-hidden bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9]/85 to-[#F8FAFC] text-slate-900 border-y border-slate-200/50 md:rounded-3xl shadow-2xl min-h-screen lg:min-h-0 py-10 lg:py-0">
             
+            {/* Background Looping timelapse video */}
             <video
               autoPlay
               loop
@@ -1738,10 +2263,10 @@ export default function LandingPage() {
               playsInline
               className="absolute inset-0 w-full h-full object-cover pointer-events-none z-0 opacity-[0.22] transition-opacity duration-1000"
             >
-              {/* ИСПРАВЛЕНО: Добавлен префикс репозитория для фонового таймлапс-видео */}
-              <source src="/centr_nedvighimosti/timelaps.mp4" type="video/mp4" />
+              <source src="https://www.image2url.com/r2/default/videos/1780893781389-e1d54efb-16f9-493b-aa84-5f1f44905972.mp4" type="video/mp4" />
             </video>
 
+            {/* Modern light glassmorphism ambient backgrounds */}
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
               <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-emerald-100/40 rounded-full blur-[100px]" />
               <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-sky-200/30 rounded-full blur-[120px]" />
@@ -1749,10 +2274,10 @@ export default function LandingPage() {
               <div className="absolute inset-0 opacity-[0.25] bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:24px_24px]" />
             </div>
 
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center h-full py-8 md:py-16">
+            <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center lg:h-full py-4 sm:py-8 lg:py-16">
               
-              {/* Left Column */}
-              <div className="lg:col-span-5 flex flex-col justify-center text-center lg:text-left h-full max-w-xl mx-auto lg:mx-0 z-20">
+              {/* Left Column: Interactive Step Explanations (Glassmorphism layout) */}
+              <div className="lg:col-span-12 xl:col-span-5 flex flex-col justify-center text-center lg:text-left lg:h-full max-w-xl mx-auto lg:mx-0 z-20">
                 <div className="mb-4 flex justify-center lg:justify-start">
                   <span className="text-xs font-extrabold tracking-widest text-emerald-700 uppercase bg-emerald-50/90 px-4 py-2 rounded-full border border-emerald-200/60 shadow-[0_4px_16px_rgba(16,185,129,0.06)] backdrop-blur-md">
                     Интерактивный путеводитель
@@ -1767,7 +2292,9 @@ export default function LandingPage() {
                   Следите за интерактивным прогрессом при прокрутке страницы. Каждая карточка представляет собой отдельный этап работы нашей команды.
                 </p>
 
+                {/* Vertical Step Tracker Panel for Desktop only */}
                 <div className="hidden lg:flex flex-col gap-3 relative pl-6 border-l border-slate-200/60 my-4 text-left">
+                  {/* Sliding Filled Progress Bar overlay */}
                   <div 
                     style={{
                       height: `${scrollProgress * 100}%`,
@@ -1817,6 +2344,7 @@ export default function LandingPage() {
                   })}
                 </div>
                 
+                {/* Compact mobile layout progress indicator bar container */}
                 <div className="lg:hidden w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-3 border border-slate-200/40">
                   <div 
                     className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-300" 
@@ -1828,6 +2356,7 @@ export default function LandingPage() {
                   Шаг {activeTimelineStep + 1} из 8: {orbitSteps[activeTimelineStep].title}
                 </div>
 
+                {/* Step quick actions for instant calculator link */}
                 <div className="mt-2 flex flex-col sm:flex-row gap-4 items-center justify-center lg:justify-start">
                   <button
                     onClick={scrollToCalculator}
@@ -1838,10 +2367,124 @@ export default function LandingPage() {
                   </button>
                   <span className="text-xs text-slate-400 font-bold hidden lg:inline-block">Прокручивайте страницу вниз ↓</span>
                 </div>
+
+                {/* Mobile-optimized single-card manual slideshow that grows vertically preventing text clip */}
+                <div className="lg:hidden w-full mt-6 relative z-20">
+                  <AnimatePresence mode="popLayout">
+                    {orbitSteps.map((step, idx) => {
+                      if (idx !== activeTimelineStep) return null;
+
+                      const IconComponent = (() => {
+                        switch (idx) {
+                          case 0: return Sparkles;
+                          case 1: return UserCheck;
+                          case 2: return PhoneCall;
+                          case 3: return Coins;
+                          case 4: return HomeIcon;
+                          case 5: return Calculator;
+                          case 6: return Lock;
+                          case 7: return Key;
+                          default: return Sparkles;
+                        }
+                      })();
+
+                      return (
+                        <motion.div
+                          key={`mobile-card-${idx}`}
+                          initial={{ opacity: 0, x: 20, scale: 0.97 }}
+                          animate={{ opacity: 1, x: 0, scale: 1 }}
+                          exit={{ opacity: 0, x: -20, scale: 0.97 }}
+                          transition={{ duration: 0.2, ease: 'easeInOut' }}
+                          className="w-full text-left"
+                        >
+                          <div className="w-full p-5 sm:p-7 rounded-2.5xl bg-white/90 border border-white/80 backdrop-blur-xl shadow-[0_12px_32px_-12px_rgba(148,163,184,0.18)] text-slate-800 relative overflow-hidden">
+                            {/* Ambient background blur */}
+                            <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.05]">
+                              <div className="absolute top-[-20%] right-[-10%] w-[160px] h-[160px] bg-emerald-500 rounded-full blur-[35px]" />
+                              <div className="absolute bottom-[-20%] left-[-10%] w-[160px] h-[160px] bg-teal-500 rounded-full blur-[35px]" />
+                            </div>
+
+                            <div className="absolute right-4 top-2 select-none pointer-events-none font-mono text-[70px] sm:text-[90px] leading-none font-extrabold tracking-tighter text-slate-900/[0.03]">
+                              0{idx + 1}
+                            </div>
+
+                            <div className="relative z-10 space-y-4">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-9 h-9 bg-emerald-500/10 text-emerald-600 rounded-xl flex items-center justify-center border border-emerald-500/20 shadow-xs">
+                                  <IconComponent className="w-5 h-5 animate-pulse" />
+                                </div>
+                                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-full">
+                                  {step.badge}
+                                </span>
+                              </div>
+
+                              <div>
+                                <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-tight mb-1.5">
+                                  {step.title}
+                                </h3>
+                                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-semibold">
+                                  {step.desc}
+                                </p>
+                              </div>
+
+                              <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-2">
+                                <div className="flex items-center gap-1.5">
+                                  {orbitSteps.map((_, dotIdx) => (
+                                    <button
+                                      key={`mob-dot-${dotIdx}`}
+                                      onClick={() => setActiveTimelineStep(dotIdx)}
+                                      className={`
+                                        w-1.5 h-1.5 rounded-full cursor-pointer transition-all border-0 p-0
+                                        ${dotIdx === activeTimelineStep 
+                                          ? 'bg-emerald-500 w-3.5' 
+                                          : 'bg-slate-200 hover:bg-slate-300'
+                                        }
+                                      `}
+                                      title={`Шаг ${dotIdx + 1}`}
+                                    />
+                                  ))}
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                  {activeTimelineStep > 0 && (
+                                    <button
+                                      onClick={() => setActiveTimelineStep(activeTimelineStep - 1)}
+                                      className="text-[10px] font-black uppercase text-slate-500 tracking-wider flex items-center gap-1 cursor-pointer bg-slate-50 hover:bg-slate-100 border border-slate-200/50 py-1.5 px-2.5 rounded-lg transition-all font-semibold"
+                                    >
+                                      Назад
+                                    </button>
+                                  )}
+                                  {activeTimelineStep < 7 ? (
+                                    <button
+                                      onClick={() => setActiveTimelineStep(activeTimelineStep + 1)}
+                                      className="text-[10px] font-black uppercase text-emerald-600 tracking-wider flex items-center gap-1 cursor-pointer bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/50 py-1.5 px-2.5 rounded-lg transition-all font-semibold"
+                                    >
+                                      Далее
+                                      <ArrowRight className="w-3 h-3" />
+                                    </button>
+                                  ) : (
+                                    <button
+                                      onClick={scrollToCalculator}
+                                      className="text-[10px] font-black uppercase text-emerald-700 tracking-wider flex items-center gap-1 cursor-pointer bg-emerald-100 border border-emerald-200 px-2.5 py-1.5 rounded-lg transition-all font-semibold"
+                                    >
+                                      Получить расчет
+                                      <Check className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
+                </div>
+
               </div>
 
-              {/* Right Column */}
-              <div className="lg:col-span-7 flex items-center justify-center relative select-none w-full h-[320px] sm:h-[380px] lg:h-[440px] xl:h-[480px]">
+              {/* Right Column: Dynamic Stacked Glassmorphic Cards (Desktop only) */}
+              <div className="hidden lg:flex lg:col-span-12 xl:col-span-7 items-center justify-center relative select-none w-full h-[320px] sm:h-[380px] lg:h-[440px] xl:h-[480px]">
                 {orbitSteps.map((step, idx) => {
                   const isPast = idx < activeTimelineStep;
                   const isCurrent = idx === activeTimelineStep;
@@ -1962,7 +2605,7 @@ export default function LandingPage() {
                                   className={`
                                     w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full cursor-pointer transition-all border-0 p-0
                                     ${dotIdx === idx 
-                                      ? 'bg-emerald-50 w-4 sm:w-5' 
+                                      ? 'bg-emerald-500 w-4 sm:w-5' 
                                       : dotIdx < activeTimelineStep
                                         ? 'bg-emerald-400/60'
                                         : 'bg-slate-200 hover:bg-slate-300'
@@ -2081,71 +2724,71 @@ export default function LandingPage() {
 
       </main>
 
-      {/* FOOTER */}
-      <footer className="mt-32 border-t border-slate-200 bg-slate-50 py-16 sm:py-20 relative z-10">
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-slate-200/60">
-            <div className="md:col-span-5 space-y-4">
-              <div className="flex items-center gap-2.5">
-                <div className="relative w-9 h-9 flex items-center justify-center rounded-lg bg-gradient-to-tr from-slate-900 to-slate-800 text-white shadow-md">
-                  <Building className="w-4.5 h-4.5 text-white" />
+        {/* FOOTER */}
+        <footer className="mt-32 border-t border-slate-200 bg-slate-50 py-16 sm:py-20 relative z-10">
+          <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-slate-200/60">
+              <div className="md:col-span-5 space-y-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="relative w-9 h-9 flex items-center justify-center rounded-lg bg-gradient-to-tr from-slate-900 to-slate-800 text-white shadow-md">
+                    <Building className="w-4.5 h-4.5 text-white" />
+                  </div>
+                  <span className="text-[15px] font-black uppercase tracking-wider text-slate-900">
+                    Единый Центр <span className="text-emerald-600">Недвижимости</span>
+                  </span>
                 </div>
-                <span className="text-[15px] font-black uppercase tracking-wider text-slate-900">
-                  Единый Центр <span className="text-emerald-600">Недвижимости</span>
-                </span>
+                <p className="text-slate-500 text-xs sm:text-sm leading-relaxed max-w-sm font-semibold">
+                  Интерактивный независимый инструмент для подбора программ государственной поддержки, расчета платежей и анализа условий ипотечного кредитования.
+                </p>
               </div>
-              <p className="text-slate-500 text-xs sm:text-sm leading-relaxed max-w-sm font-semibold">
-                Интерактивный независимый инструмент для подбора программ государственной поддержки, расчета платежей и анализа условий ипотечного кредитования.
+              
+              <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">Навигация</h4>
+                  <ul className="space-y-2.5 text-xs font-bold text-slate-600">
+                    <li><button onClick={scrollToCalculator} className="hover:text-emerald-600 transition-colors bg-transparent border-0 p-0 cursor-pointer">Калькулятор</button></li>
+                    <li><a href="#complexes" className="hover:text-emerald-600 transition-colors">Подобрать ЖК</a></li>
+                    <li><a href="#timeline" className="hover:text-emerald-600 transition-colors">Этапы программы</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">Партнерам</h4>
+                  <ul className="space-y-2.5 text-xs font-bold text-slate-600">
+                    <li><a href="https://centr-nedvighimosti.ru" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-600 transition-colors flex items-center gap-1">centr-nedvighimosti.ru <ExternalLink className="w-3 h-3" /></a></li>
+                    <li><span className="text-slate-400">Сертифицированные специалисты</span></li>
+                  </ul>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">Поддержка</h4>
+                  <ul className="space-y-2.5 text-xs font-bold text-slate-600">
+                    <li><span className="text-slate-500">По любым вопросам</span></li>
+                    <li className="text-slate-900 font-extrabold text-sm sm:text-xs">info@centr-nedvighimosti.ru</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-8 text-[11px] text-[#64748B] leading-relaxed space-y-4 font-semibold max-w-4xl">
+              <div className="text-slate-800 font-black text-xs sm:text-[11px]">
+                © 2026 Единый Центр Недвижимости (centr-nedvighimosti.ru). Все права защищены.
+              </div>
+              <p>
+                Информация на данном сайте носит исключительно ознакомительный характер и ни при каких условиях не является публичной офертой, определяемой положениями Статьи 437 Гражданского кодекса РФ. Расчеты в калькуляторе являются предварительными. Для получения точных условий по кредитованию и государственным программам обратитесь к сертифицированному специалисту центра.
+              </p>
+              <p>
+                Нажимая на кнопки на сайте, вы даете{' '}
+                <span className="underline hover:text-emerald-600 transition-colors cursor-pointer">
+                  Согласие на обработку персональных данных
+                </span>{' '}
+                и соглашаетесь с{' '}
+                <span className="underline hover:text-emerald-600 transition-colors cursor-pointer">
+                  Политикой конфиденциальности
+                </span>
+                .
               </p>
             </div>
-            
-            <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
-              <div>
-                <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">Навигация</h4>
-                <ul className="space-y-2.5 text-xs font-bold text-slate-600">
-                  <li><button onClick={scrollToCalculator} className="hover:text-emerald-600 transition-colors bg-transparent border-0 p-0 cursor-pointer">Калькулятор</button></li>
-                  <li><a href="#complexes" className="hover:text-emerald-600 transition-colors">Подобрать ЖК</a></li>
-                  <li><a href="#timeline" className="hover:text-emerald-600 transition-colors">Этапы программы</a></li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">Партнерам</h4>
-                <ul className="space-y-2.5 text-xs font-bold text-slate-600">
-                  <li><a href="https://centr-nedvighimosti.ru" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-600 transition-colors flex items-center gap-1">centr-nedvighimosti.ru <ExternalLink className="w-3 h-3" /></a></li>
-                  <li><span className="text-slate-400">Сертифицированные специалисты</span></li>
-                </ul>
-              </div>
-              <div className="col-span-2 sm:col-span-1">
-                <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">Поддержка</h4>
-                <ul className="space-y-2.5 text-xs font-bold text-slate-600">
-                  <li><span className="text-slate-500">По любым вопросам</span></li>
-                  <li className="text-slate-900 font-extrabold text-sm sm:text-xs">info@centr-nedvighimosti.ru</li>
-                </ul>
-              </div>
-            </div>
           </div>
-
-          <div className="pt-8 text-[11px] text-[#64748B] leading-relaxed space-y-4 font-semibold max-w-4xl">
-            <div className="text-slate-800 font-black text-xs sm:text-[11px]">
-              © 2026 Единый Центр Недвижимости (centr-nedvighimosti.ru). Все права защищены.
-            </div>
-            <p>
-              Информация на данном сайте носит исключительно ознакомительный характер и ни при каких условиях не является публичной офертой, определяемой положениями Статьи 437 Гражданского кодекса РФ. Расчеты в калькуляторе являются предварительными. Для получения точных условий по кредитованию и государственным программам обратитесь к сертифицированному специалисту центра.
-            </p>
-            <p>
-              Нажимая на кнопки на сайте, вы даете{' '}
-              <span className="underline hover:text-emerald-600 transition-colors cursor-pointer">
-                Согласие на обработку персональных данных
-              </span>{' '}
-              и соглашаетесь с{' '}
-              <span className="underline hover:text-emerald-600 transition-colors cursor-pointer">
-                Политикой конфиденциальности
-              </span>
-              .
-            </p>
-          </div>
-        </div>
-      </footer>
+        </footer>
 
     </div>
   );

@@ -79,6 +79,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    if (lead.details && Array.isArray(lead.details)) {
+      message += `\n📋 *Ответы на квиз:*\n`;
+      lead.details.forEach((detail: string) => {
+        message += `${detail}\n`;
+      });
+    }
+
     // Call Telegram API
     const tgUrl = `https://api.telegram.org/bot${token}/sendMessage`;
     const response = await fetch(tgUrl, {
@@ -95,7 +102,7 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Telegram API error response:", errorText);
+      console.warn("Telegram API error response:", errorText);
       throw new Error(`Telegram API responded with status ${response.status}`);
     }
 
@@ -104,7 +111,7 @@ export async function POST(req: NextRequest) {
       message: "Lead sent to Telegram successfully!",
     });
   } catch (err: any) {
-    console.error("Error sending lead to Telegram:", err);
+    console.warn("Error sending lead to Telegram:", err);
     return NextResponse.json(
       { success: false, error: err.message },
       { status: 500 }

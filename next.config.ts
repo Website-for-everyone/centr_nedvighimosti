@@ -19,15 +19,20 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**', // This allows any path under the hostname
       },
+      {
+        protocol: 'https',
+        hostname: 'www.image2url.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
-  output: 'export', // Changed from 'standalone' for GitHub Pages static export
-  distDir: 'out', // Export to 'out' directory for GitHub Pages
+  output: 'standalone', // To host on GitHub Pages: change to 'export' and uncomment basePath below if needed
   // basePath: '/your-repo-name',
   transpilePackages: ['motion'],
   webpack: (config, {dev}) => {
     // HMR is disabled in AI Studio via DISABLE_HMR env var.
-    // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+    // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
     if (dev && process.env.DISABLE_HMR === 'true') {
       config.watchOptions = {
         ignored: /.*/,
